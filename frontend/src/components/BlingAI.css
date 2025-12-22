@@ -1,0 +1,177 @@
+.bling-ai-container {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    z-index: var(--z-tooltip);
+}
+
+.bling-ai-trigger {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--gradient-primary);
+    border: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3), 0 0 15px var(--color-primary-light);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    color: white;
+    transition: transform var(--transition-fast), filter var(--transition-fast);
+}
+
+.bling-ai-trigger:hover {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+.bling-ai-window {
+    position: absolute;
+    bottom: 80px;
+    right: 0;
+    width: 380px;
+    height: 550px;
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-lg);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: slideUp var(--transition-base);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.bling-ai-header {
+    background: var(--color-bg-tertiary);
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.bling-ai-header h3 {
+    margin: 0;
+    font-size: var(--font-size-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.bling-ai-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--spacing-lg);
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+}
+
+.ai-message,
+.user-message {
+    max-width: 85%;
+    padding: var(--spacing-md);
+    border-radius: 12px;
+    font-size: var(--font-size-base);
+    line-height: 1.5;
+}
+
+.ai-message {
+    align-self: flex-start;
+    background: var(--color-bg-tertiary);
+    border-bottom-left-radius: 4px;
+}
+
+.user-message {
+    align-self: flex-end;
+    background: var(--color-primary);
+    color: white;
+    border-bottom-right-radius: 4px;
+}
+
+.bling-ai-input-area {
+    padding: var(--spacing-lg);
+    border-top: 1px solid var(--color-border);
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.bling-ai-input {
+    flex: 1;
+    background: var(--color-bg-tertiary);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    padding: var(--spacing-sm) var(--spacing-lg);
+    color: var(--color-text-primary);
+}
+
+.bling-ai-send {
+    background: none;
+    border: none;
+    color: var(--color-primary);
+    cursor: pointer;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+}
+
+.bling-ai-send:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.verification-card {
+    background: var(--glass-bg);
+    border: 1px solid var(--color-primary);
+    padding: var(--spacing-md);
+    border-radius: var(--radius-md);
+    margin-top: var(--spacing-md);
+}
+
+.verify-score {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--color-primary);
+    margin-bottom: var(--spacing-xs);
+}
+
+.verify-status {
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: var(--spacing-sm);
+}
+
+.status-approved {
+    color: var(--color-success);
+}
+
+.status-pending {
+    color: var(--color-warning);
+}
+
+.status-rejected {
+    color: var(--color-error);
+}
+
+@media (max-width: 480px) {
+    .bling-ai-window {
+        width: calc(100vw - 40px);
+        height: 60vh;
+        right: -10px;
+    }
+}

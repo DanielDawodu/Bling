@@ -1,0 +1,29 @@
+.code-editor-wrapper {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background: #1e1e1e;
+}
+
+.prism-editor textarea {
+    outline: none !important;
+}
+
+/* Custom scrollbar for editor */
+.prism-editor::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.prism-editor::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+
+.prism-editor::-webkit-scrollbar-thumb {
+    background: #424242;
+    border-radius: 4px;
+}
+
+.prism-editor::-webkit-scrollbar-thumb:hover {
+    background: #505050;
+}

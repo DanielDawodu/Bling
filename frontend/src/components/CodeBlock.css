@@ -1,0 +1,85 @@
+.code-block {
+    background: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--glass-border);
+}
+
+.code-language {
+    font-family: var(--font-code);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-primary);
+    letter-spacing: 0.5px;
+}
+
+.copy-button {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs) var(--spacing-sm);
+    background: transparent;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.copy-button:hover {
+    background: rgba(217, 165, 32, 0.2);
+    border-color: var(--color-primary);
+    color: var(--color-primary);
+}
+
+.copy-button svg {
+    width: 14px;
+    height: 14px;
+}
+
+.code-content {
+    padding: var(--spacing-md);
+    margin: 0;
+    overflow-x: auto;
+    font-family: var(--font-code);
+    font-size: var(--font-size-sm);
+    line-height: 1.6;
+}
+
+.code-content code {
+    background: none;
+    padding: 0;
+    color: var(--color-text-primary);
+}
+
+/* Syntax highlighting colors */
+.code-content .keyword {
+    color: var(--color-primary);
+    font-weight: 600;
+}
+
+.code-content .string {
+    color: hsl(120, 60%, 60%);
+}
+
+.code-content .comment {
+    color: var(--color-text-muted);
+    font-style: italic;
+}
+
+.code-content .function {
+    color: hsl(200, 70%, 65%);
+}

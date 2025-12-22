@@ -1,0 +1,262 @@
+.my-jobs-page {
+    min-height: 100vh;
+}
+
+.my-jobs-header {
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+    background: var(--color-bg-primary);
+    backdrop-filter: blur(20px);
+}
+
+.my-jobs-header h1 {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0 0 var(--spacing-md) 0;
+}
+
+.my-jobs-tabs {
+    display: flex;
+    gap: var(--spacing-lg);
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    padding: var(--spacing-sm) 0;
+    cursor: pointer;
+    position: relative;
+    transition: color var(--transition-fast);
+}
+
+.tab-btn:hover {
+    color: var(--color-text-primary);
+}
+
+.tab-btn.active {
+    color: var(--color-text-primary);
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -17px;
+    /* Aligns with header border */
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--color-primary);
+    border-radius: var(--radius-full);
+}
+
+.my-jobs-content {
+    padding: var(--spacing-lg);
+}
+
+/* Manage Job Card */
+.manage-job-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+    transition: all var(--transition-fast);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
+}
+
+.manage-job-card:hover {
+    border-color: var(--color-border);
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.manage-job-info {
+    flex: 1;
+    min-width: 250px;
+    /* Ensure it doesn't shrink too much */
+}
+
+.manage-job-title {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    display: block;
+    margin-bottom: var(--spacing-xs);
+}
+
+.manage-job-title:hover {
+    text-decoration: underline;
+}
+
+.manage-job-company {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: 0 0 var(--spacing-sm) 0;
+}
+
+.manage-job-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    flex-wrap: wrap;
+}
+
+.bullet {
+    color: var(--color-border);
+}
+
+.manage-job-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-left: auto;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.btn-danger {
+    background: rgba(244, 33, 46, 0.1);
+    color: #f4212e;
+    border: 1px solid transparent;
+}
+
+.btn-danger:hover {
+    background: rgba(244, 33, 46, 0.2);
+}
+
+/* Application Card */
+.application-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
+}
+
+.app-job-title a {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    text-decoration: none;
+}
+
+.app-job-title a:hover {
+    text-decoration: underline;
+}
+
+.app-company {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    margin: var(--spacing-xs) 0;
+}
+
+.app-date {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+/* Status Badges */
+.status-badge {
+    padding: 4px 12px;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-sm);
+    font-weight: 600;
+    text-transform: capitalize;
+}
+
+.status-badge.active {
+    background: rgba(0, 186, 124, 0.15);
+    color: #00ba7c;
+}
+
+.status-badge.closed {
+    background: rgba(244, 33, 46, 0.15);
+    color: #f4212e;
+}
+
+.status-pending {
+    background: rgba(113, 118, 123, 0.15);
+    color: var(--color-text-secondary);
+}
+
+.status-review {
+    background: rgba(217, 165, 32, 0.15);
+    color: var(--color-primary);
+}
+
+.status-accepted {
+    background: rgba(0, 186, 124, 0.15);
+    color: #00ba7c;
+}
+
+.status-rejected {
+    background: rgba(244, 33, 46, 0.15);
+    color: #f4212e;
+}
+
+@media (max-width: 768px) {
+
+    .manage-job-card,
+    .application-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--spacing-md);
+    }
+
+    .manage-job-actions {
+        margin-left: 0;
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .manage-job-actions .btn {
+        flex: 1;
+        text-align: center;
+    }
+
+    .app-status {
+        width: 100%;
+        display: flex;
+        justify-content: flex-end;
+    }
+}
+
+.app-status {
+    width: 100%;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.btn-outline-warning {
+    color: #f91880;
+    border: 1px solid #f91880;
+    background: transparent;
+}
+
+.btn-outline-warning:hover {
+    background: rgba(249, 24, 128, 0.1);
+}
+
+.btn-outline-success {
+    color: #00ba7c;
+    border: 1px solid #00ba7c;
+    background: transparent;
+}
+
+.btn-outline-success:hover {
+    background: rgba(0, 186, 124, 0.1);
+}

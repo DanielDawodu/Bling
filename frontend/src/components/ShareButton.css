@@ -1,0 +1,182 @@
+.share-button-container {
+    position: relative;
+    display: inline-block;
+}
+
+.share-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-xs);
+    background: transparent;
+    border: none;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border-radius: var(--radius-full);
+    transition: all var(--transition-fast);
+    font-size: var(--font-size-sm);
+}
+
+.share-btn:hover {
+    color: var(--color-primary);
+    background: var(--color-primary-alpha);
+}
+
+.share-btn svg {
+    flex-shrink: 0;
+}
+
+.share-btn-text {
+    display: none;
+}
+
+@media (min-width: 768px) {
+    .share-btn-text {
+        display: inline;
+    }
+}
+
+.share-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: var(--z-modal);
+    animation: fadeIn 0.2s ease;
+}
+
+.share-menu {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--color-bg-secondary);
+    border-top-left-radius: var(--radius-xl);
+    border-top-right-radius: var(--radius-xl);
+    z-index: calc(var(--z-modal) + 1);
+    animation: slideUp 0.3s ease;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+@media (min-width: 640px) {
+    .share-menu {
+        position: absolute;
+        bottom: auto;
+        top: 100%;
+        left: auto;
+        right: 0;
+        width: 280px;
+        border-radius: var(--radius-lg);
+        box-shadow: var(--shadow-lg);
+        margin-top: var(--spacing-xs);
+        animation: fadeIn 0.2s ease;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(100%);
+    }
+
+    to {
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.share-menu-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--spacing-md) var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.share-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+}
+
+.share-close:hover {
+    color: var(--color-text-primary);
+}
+
+.share-options {
+    padding: var(--spacing-sm);
+}
+
+.share-option {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    width: 100%;
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: none;
+    border: none;
+    color: var(--color-text-primary);
+    cursor: pointer;
+    text-align: left;
+    border-radius: var(--radius-md);
+    transition: background var(--transition-fast);
+    font-size: var(--font-size-base);
+}
+
+.share-option:hover {
+    background: var(--color-bg-tertiary);
+}
+
+.share-icon {
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-bg-tertiary);
+    border-radius: var(--radius-full);
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.share-option:nth-child(2) .share-icon {
+    background: #000;
+    color: #fff;
+}
+
+.share-option:nth-child(3) .share-icon {
+    background: #0A66C2;
+    color: #fff;
+}
+
+.share-option:nth-child(4) .share-icon {
+    background: #25D366;
+    color: #fff;
+}
+
+.share-option:nth-child(5) .share-icon {
+    background: #0088cc;
+    color: #fff;
+}
+
+.share-option:nth-child(6) .share-icon {
+    background: var(--color-primary);
+    color: #fff;
+}

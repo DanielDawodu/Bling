@@ -1,0 +1,30 @@
+.followers-page {
+    padding: 2rem 0;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.followers-page h2 {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.follower-card {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    gap: 1rem;
+    transition: transform 0.2s;
+    text-decoration: none;
+    color: inherit;
+}
+
+.follower-card:hover {
+    transform: translateY(-2px);
+}
+
+.follower-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}

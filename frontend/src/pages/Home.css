@@ -1,0 +1,114 @@
+.home-feed {
+    min-height: 100vh;
+}
+
+.feed-header {
+    padding: 0;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+}
+
+[data-theme="light"] .feed-header {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.feed-tabs {
+    display: flex;
+    height: 53px;
+}
+
+.feed-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    position: relative;
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    transition: background-color var(--transition-fast);
+}
+
+.feed-tab:hover {
+    background-color: rgba(239, 243, 244, 0.1);
+}
+
+[data-theme="light"] .feed-tab:hover {
+    background-color: rgba(15, 20, 25, 0.1);
+}
+
+.feed-tab.active {
+    font-weight: 700;
+    color: var(--color-text-primary);
+}
+
+.feed-tab span {
+    position: relative;
+    padding: 16px 0;
+}
+
+.tab-indicator {
+    position: absolute;
+    bottom: 0;
+    width: 56px;
+    /* Approximate width of text */
+    height: 4px;
+    background-color: var(--color-primary);
+    border-radius: 9999px;
+}
+
+.compose-area {
+    display: flex;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.compose-avatar {
+    margin-right: var(--spacing-md);
+}
+
+.compose-input-wrapper {
+    flex: 1;
+    padding-top: 8px;
+}
+
+.compose-placeholder {
+    font-size: 1.25rem;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    cursor: text;
+}
+
+.loading-spinner {
+    display: flex;
+    justify-content: center;
+    padding: var(--spacing-xl);
+}
+
+.feed-error {
+    text-align: center;
+    padding: var(--spacing-xl);
+    color: var(--color-error);
+}
+
+.empty-feed {
+    padding: var(--spacing-2xl);
+    text-align: center;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.empty-feed h3 {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.empty-feed p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-xl);
+}
+
+.load-more-container {
+    padding: var(--spacing-lg);
+}

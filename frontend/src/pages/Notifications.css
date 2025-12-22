@@ -1,0 +1,122 @@
+.notifications-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px 15px;
+}
+
+.notifications-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.notifications-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.notification-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    margin-bottom: 12px;
+    text-decoration: none;
+    color: inherit;
+    position: relative;
+    transition: all 0.2s ease;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.notification-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    transform: translateY(-2px);
+}
+
+.notification-item.unread {
+    background: rgba(var(--primary-rgb), 0.05);
+    border-left: 3px solid var(--primary-color);
+}
+
+.notification-icon {
+    font-size: 20px;
+    margin-right: 15px;
+    min-width: 30px;
+    text-align: center;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    flex: 1;
+}
+
+.notification-user img,
+.notification-user .avatar-placeholder {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 12px;
+}
+
+.notification-user .avatar-placeholder {
+    background: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    color: white;
+}
+
+.notification-text .username {
+    font-weight: 700;
+    margin-right: 5px;
+}
+
+.notification-text p {
+    margin: 2px 0;
+    font-size: 15px;
+    color: var(--text-color);
+}
+
+.notification-text .time {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+.delete-notification {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.notification-item:hover .delete-notification {
+    opacity: 1;
+}
+
+.delete-notification:hover {
+    color: var(--color-error);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+
+.empty-icon {
+    font-size: 64px;
+    margin-bottom: 20px;
+    opacity: 0.3;
+}
+
+.load-more {
+    width: 100%;
+    margin-top: 10px;
+}

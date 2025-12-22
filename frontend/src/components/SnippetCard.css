@@ -1,0 +1,112 @@
+.snippet-card {
+    display: block;
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: var(--radius-lg);
+    padding: var(--spacing-md);
+    text-decoration: none;
+    color: inherit;
+    transition: all var(--transition-normal);
+    overflow: hidden;
+}
+
+.snippet-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-primary);
+    box-shadow: 0 8px 24px rgba(217, 165, 32, 0.15);
+}
+
+.snippet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: var(--spacing-md);
+}
+
+.snippet-info {
+    display: flex;
+    gap: var(--spacing-sm);
+    align-items: center;
+}
+
+.author-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.snippet-title {
+    font-size: var(--font-size-base);
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.author-name {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
+}
+
+.language-badge {
+    font-size: var(--font-size-xs);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
+    background: rgba(217, 165, 32, 0.1);
+    color: var(--color-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.snippet-preview {
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--spacing-md);
+    max-height: 150px;
+    overflow: hidden;
+    position: relative;
+}
+
+.snippet-preview::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 40px;
+    background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.1));
+}
+
+.snippet-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.snippet-stats {
+    display: flex;
+    gap: var(--spacing-md);
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+}
+
+.stat-item svg {
+    fill: currentColor;
+}
+
+.snippet-tags {
+    display: flex;
+    gap: var(--spacing-xs);
+}
+
+.tag {
+    font-size: var(--font-size-xs);
+    color: var(--color-primary);
+}

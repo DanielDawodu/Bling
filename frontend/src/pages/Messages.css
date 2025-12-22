@@ -1,0 +1,105 @@
+.messages-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.messages-header {
+    padding: 0 var(--spacing-lg);
+    height: 53px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(0, 0, 0, 0.65);
+    backdrop-filter: blur(12px);
+    z-index: 10;
+}
+
+[data-theme="light"] .messages-header {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.messages-header h2 {
+    font-size: 1.25rem;
+    margin: 0;
+}
+
+.header-actions {
+    display: flex;
+    gap: var(--spacing-sm);
+}
+
+.conversations-list {
+    flex: 1;
+}
+
+.conversation-item {
+    display: flex;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+    text-decoration: none;
+    color: inherit;
+    transition: background-color var(--transition-fast);
+}
+
+.conversation-item:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="light"] .conversation-item:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.conversation-avatar {
+    margin-right: var(--spacing-md);
+}
+
+.conversation-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.conversation-meta {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 2px;
+}
+
+.conversation-name {
+    font-weight: 700;
+    font-size: var(--font-size-base);
+    color: var(--color-text-primary);
+}
+
+.conversation-handle,
+.conversation-time,
+.conversation-dot {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+}
+
+.conversation-preview {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.empty-messages {
+    padding: var(--spacing-2xl);
+    text-align: center;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.empty-messages h3 {
+    font-size: 2rem;
+    margin-bottom: var(--spacing-md);
+}
+
+.empty-messages p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-lg);
+}

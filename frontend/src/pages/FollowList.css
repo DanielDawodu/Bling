@@ -1,0 +1,64 @@
+.follow-list-page {
+    min-height: 100vh;
+}
+
+.header-title h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0;
+}
+
+.header-subtitle {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+}
+
+.follow-item {
+    display: flex;
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+    text-decoration: none;
+    color: inherit;
+    transition: background-color var(--transition-fast);
+}
+
+.follow-item:hover {
+    background-color: rgba(255, 255, 255, 0.03);
+}
+
+[data-theme="light"] .follow-item:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+}
+
+.follow-avatar-wrapper {
+    margin-right: var(--spacing-md);
+}
+
+.follow-content {
+    flex: 1;
+}
+
+.follow-header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 4px;
+}
+
+.follow-name {
+    font-weight: 700;
+    font-size: var(--font-size-base);
+}
+
+.follow-name:hover {
+    text-decoration: underline;
+}
+
+.follow-handle {
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-base);
+}
+
+.follow-bio {
+    color: var(--color-text-primary);
+    font-size: var(--font-size-base);
+    margin-bottom: 0;
+}
