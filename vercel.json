@@ -12,19 +12,21 @@
       }
     }
   ],
-  "cleanUrls": true,
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api/index.js"
+      "src": "/api/(.*)",
+      "dest": "/api/index.js"
     },
     {
-      "source": "/uploads/(.*)",
-      "destination": "/api/index.js"
+      "src": "/uploads/(.*)",
+      "dest": "/api/index.js"
     },
     {
-      "source": "/((?!api|uploads|assets|favicon|logo|sw.js|manifest|.*\\..*).*)",
-      "destination": "/index.html"
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
