@@ -31,7 +31,7 @@ passport.use(new LocalStrategy(
 passport.use(new GitHubStrategy({
     clientID: process.env.GITHUB_CLIENT_ID || 'your_github_client_id',
     clientSecret: process.env.GITHUB_CLIENT_SECRET || 'your_github_client_secret',
-    callbackURL: process.env.GITHUB_CALLBACK_URL || 'http://localhost:5001/api/auth/github/callback'
+    callbackURL: process.env.GITHUB_CALLBACK_URL || (process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/api/auth/github/callback` : 'http://localhost:5001/api/auth/github/callback')
 },
     async (accessToken, refreshToken, profile, done) => {
         try {
@@ -79,7 +79,7 @@ passport.use(new GitHubStrategy({
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID || 'your_google_client_id',
     clientSecret: process.env.GOOGLE_CLIENT_SECRET || 'your_google_client_secret',
-    callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:5001/api/auth/google/callback'
+    callbackURL: process.env.GOOGLE_CALLBACK_URL || (process.env.BACKEND_URL ? `${process.env.BACKEND_URL}/api/auth/google/callback` : 'http://localhost:5001/api/auth/google/callback')
 },
     async (accessToken, refreshToken, profile, done) => {
         try {
