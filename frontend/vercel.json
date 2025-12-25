@@ -1,6 +1,5 @@
 {
     "version": 2,
-    "cleanUrls": true,
     "rewrites": [
         {
             "source": "/api/(.*)",
@@ -11,7 +10,7 @@
             "destination": "https://bling-backend-v2.vercel.app/uploads/$1"
         },
         {
-            "source": "/(.*)",
+            "source": "/((?!assets/|favicon|logo|sw.js|manifest|.*\\..*).*)",
             "destination": "/index.html"
         }
     ]
