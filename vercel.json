@@ -1,6 +1,7 @@
 {
   "buildCommand": "cd frontend && npm install && npm run build",
   "outputDirectory": "dist",
+  "framework": "vite",
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -11,7 +12,7 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/((?!api|uploads|assets|.*\\.).*)",
+      "source": "/(.*)",
       "destination": "/index.html"
     }
   ]

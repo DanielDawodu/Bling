@@ -30,19 +30,40 @@ const __dirname = path.dirname(__filename);
 const app = express();
 
 // ===== MongoDB Connection caching =====
-let isConnected = false;
+let cachedDb = null;
 const connectDB = async () => {
-  if (isConnected) return;
+  if (cachedDb && mongoose.connection.readyState === 1) return cachedDb;
+
+  if (!process.env.MONGO_URI) {
+    console.warn('⚠️ MONGO_URI missing from environment variables');
+    return null;
+  }
+
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    isConnected = true;
+    const db = await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    cachedDb = db;
     console.log('✅ Connected to MongoDB');
+    return db;
   } catch (err) {
     console.error('❌ MongoDB connection error:', err);
-    if (process.env.NODE_ENV !== 'production') process.exit(1);
+    // On Vercel, we don't want to exit the process
+    if (!process.env.VERCEL) process.exit(1);
+    throw err;
   }
 };
-connectDB();
+
+// Middleware to ensure DB connection
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (err) {
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
 
 // ===== Middleware =====
 app.set('trust proxy', 1);
@@ -66,6 +87,10 @@ app.use(cors({
   },
   credentials: true
 }));
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok', environment: process.env.NODE_ENV, vercel: !!process.env.VERCEL });
+});
 
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
