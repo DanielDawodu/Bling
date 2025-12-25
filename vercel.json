@@ -12,6 +12,7 @@
       }
     }
   ],
+  "cleanUrls": true,
   "rewrites": [
     {
       "source": "/api/(.*)",
@@ -22,7 +23,7 @@
       "destination": "/api/index.js"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api|uploads|assets|favicon|logo|sw.js|manifest|.*\\..*).*)",
       "destination": "/index.html"
     }
   ]
