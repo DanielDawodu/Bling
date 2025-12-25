@@ -11,7 +11,6 @@ import passport from './config/passport.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Import routes
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import postRoutes from './routes/posts.js';
@@ -29,90 +28,74 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
-const PORT = process.env.BACKEND_PORT || 5001;
 
-// Middleware
-app.set('trust proxy', 1); // Trust first proxy (e.g. Vercel, Heroku, Nginx)
+// ===== MongoDB Connection caching =====
+let isConnected = false;
+const connectDB = async () => {
+  if (isConnected) return;
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    isConnected = true;
+    console.log('✅ Connected to MongoDB');
+  } catch (err) {
+    console.error('❌ MongoDB connection error:', err);
+    if (process.env.NODE_ENV !== 'production') process.exit(1);
+  }
+};
+connectDB();
 
-app.use(helmet({
-  crossOriginResourcePolicy: { policy: "cross-origin" } // Allow images from other domains if needed
-}));
+// ===== Middleware =====
+app.set('trust proxy', 1);
 
-app.use(mongoSanitize()); // Prevent NoSQL Injection
+app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+app.use(mongoSanitize());
 
-// CORS configuration for Vercel deployment
 const allowedOrigins = [
   'http://localhost:5173',
   'http://localhost:3000',
   process.env.FRONTEND_URL,
-  // Add Vercel preview URL patterns
 ].filter(Boolean);
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
+  origin: (origin, callback) => {
     if (!origin) return callback(null, true);
-
-    // Check if origin is in allowed list or is a Vercel preview URL
-    if (allowedOrigins.includes(origin) ||
-      origin.endsWith('.vercel.app') ||
-      origin.includes('vercel.app')) {
+    if (allowedOrigins.includes(origin) || origin.endsWith('.vercel.app') || origin.includes('vercel.app')) {
       return callback(null, true);
     }
-
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true
 }));
 
-// Rate limiting
 const globalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'production' ? 100 : 1000,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: 'Too many requests, please try again later.' }
+  windowMs: 15 * 60 * 1000,
+  max: process.env.NODE_ENV === 'production' ? 100 : 1000
 });
-
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: process.env.NODE_ENV === 'production' ? 20 : 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { error: 'Too many authentication attempts, please try again in 15 minutes.' }
+  windowMs: 15 * 60 * 1000,
+  max: process.env.NODE_ENV === 'production' ? 20 : 100
 });
 
 app.use('/api/', globalLimiter);
 app.use('/api/auth/', authLimiter);
 
-app.use(express.json({ limit: '50kb' })); // Body limit (strict but usable)
+app.use(express.json({ limit: '50kb' }));
 app.use(express.urlencoded({ extended: true, limit: '50kb' }));
 
-// Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET || 'your-secret-key',
   resave: false,
   saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
-    touchAfter: 24 * 3600 // lazy session update (in seconds)
-  }),
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 24 * 7, // 1 week
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production', // HTTPS only in production
-    sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax'
-  }
+  store: MongoStore.create({ mongoUrl: process.env.MONGO_URI, touchAfter: 24 * 3600 }),
+  cookie: { maxAge: 1000 * 60 * 60 * 24 * 7, httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax' }
 }));
 
-// Initialize Passport
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Routes
+// ===== Routes =====
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes);
@@ -126,51 +109,22 @@ app.use('/api/search', searchRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/ai', aiRoutes);
 
-// Health check route
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'OK', message: 'Bling API is running' });
-});
+// ===== Health Check =====
+app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'Bling API is running' }));
 
-// Error handling middleware
+// ===== Error handling =====
 app.use((err, req, res, next) => {
-  console.error('Error:', err);
-
-  // Don't leak stack traces in production
-  const message = process.env.NODE_ENV === 'production'
-    ? 'Internal server error'
-    : err.message;
-
-  res.status(err.status || 500).json({
-    error: message
-  });
+  console.error(err);
+  res.status(err.status || 500).json({ error: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message });
 });
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Route not found' });
-});
+// ===== 404 =====
+app.use((req, res) => res.status(404).json({ error: 'Route not found' }));
 
-// Connect to MongoDB and start server
-// Connect to MongoDB
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => {
-    console.log('✅ Connected to MongoDB');
+// Only listen locally (not on Vercel)
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  const PORT = process.env.BACKEND_PORT || 5001;
+  app.listen(PORT, () => console.log(`🚀 Backend running on http://localhost:${PORT}`));
+}
 
-    // Only listen if not running in Vercel (Vercel handles the server)
-    if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
-      app.listen(PORT, () => {
-        console.log(`🚀 Backend server running on http://localhost:${PORT}`);
-      });
-    }
-  })
-  .catch((error) => {
-    console.error('❌ MongoDB connection error:', error);
-    if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
-      process.exit(1);
-    }
-  });
-
-// Export app for Vercel
 export default app;
-
-
