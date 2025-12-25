@@ -6,6 +6,7 @@ import { NotificationProvider } from './context/NotificationContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
 import RightSidebar from './components/RightSidebar';
+import MobileNav from './components/MobileNav';
 import BlingAI from './components/BlingAI';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -93,6 +94,7 @@ function AppContent() {
             <aside className="widgets-column">
                 <RightSidebar />
             </aside>
+            <MobileNav />
             <BlingAI />
         </div >
     );
