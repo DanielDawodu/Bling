@@ -43,15 +43,14 @@ const connectDB = async () => {
     const db = await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      serverSelectionTimeoutMS: 5000, // Fail fast (5s) instead of hanging
+      serverSelectionTimeoutMS: 8000,
       socketTimeoutMS: 45000,
     });
     cachedDb = db;
-    console.log('✅ Connected to MongoDB');
+    console.log('✅ MongoDB Connected');
     return db;
   } catch (err) {
-    console.error('❌ MongoDB connection error:', err);
-    // On Vercel, we don't want to exit the process
+    console.error('❌ MongoDB Connection Error:', err.message);
     if (!process.env.VERCEL) process.exit(1);
     throw err;
   }
