@@ -11,6 +11,21 @@ const getBaseURL = () => {
     return url;
 };
 
+// Helper for normalizing image/avatar URLs
+export const normalizeUrl = (path) => {
+    if (!path) return null;
+    if (path.startsWith('http')) return path;
+
+    const backendUrl = import.meta.env.VITE_API_URL || '';
+    const cleanBackendUrl = backendUrl.replace(/\/api\/?$/, '');
+
+    // Ensure /uploads prefix
+    const cleanPath = path.startsWith('/') ? path : `/${path}`;
+    const finalPath = cleanPath.startsWith('/uploads') ? cleanPath : `/uploads${cleanPath}`;
+
+    return cleanBackendUrl ? `${cleanBackendUrl}${finalPath}` : finalPath;
+};
+
 const api = axios.create({
     baseURL: getBaseURL(),
     withCredentials: true,
