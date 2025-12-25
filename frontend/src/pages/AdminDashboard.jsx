@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { adminAPI } from '../utils/api';
+import { adminAPI, normalizeUrl } from '../utils/api';
 import { useAuth } from '../context/auth-context';
 import { format, formatDistanceToNow } from 'date-fns';
 import './AdminDashboard.css';
@@ -355,7 +355,7 @@ const AdminDashboard = () => {
                                         {activity.slice(0, 10).map((item, idx) => (
                                             <div key={idx} className={`activity-item activity-${item.type}`}>
                                                 <img
-                                                    src={item.user?.avatar || 'https://via.placeholder.com/32'}
+                                                    src={normalizeUrl(item.user?.avatar)}
                                                     alt=""
                                                     className="activity-avatar"
                                                 />
@@ -416,7 +416,7 @@ const AdminDashboard = () => {
                                             <tr key={u._id}>
                                                 <td>
                                                     <Link to={`/profile/${u._id}`} className="user-cell">
-                                                        <img src={u.avatar || 'https://via.placeholder.com/40'} alt="" className="avatar avatar-sm" />
+                                                        <img src={normalizeUrl(u.avatar)} alt="" className="avatar avatar-sm" />
                                                         <span className="user-name">{u.username}</span>
                                                     </Link>
                                                 </td>
@@ -493,7 +493,7 @@ const AdminDashboard = () => {
                                     <div key={post._id} className="content-card glass-card">
                                         <div className="content-header">
                                             <Link to={`/profile/${post.author?._id}`} className="content-author">
-                                                <img src={post.author?.avatar || 'https://via.placeholder.com/32'} alt="" />
+                                                <img src={normalizeUrl(post.author?.avatar)} alt="" />
                                                 <span>{post.author?.username}</span>
                                             </Link>
                                             <span className="content-date">{format(new Date(post.createdAt), 'MMM d, yyyy')}</span>
@@ -539,7 +539,7 @@ const AdminDashboard = () => {
                                     <div key={snippet._id} className="content-card glass-card">
                                         <div className="content-header">
                                             <Link to={`/profile/${snippet.author?._id}`} className="content-author">
-                                                <img src={snippet.author?.avatar || 'https://via.placeholder.com/32'} alt="" />
+                                                <img src={normalizeUrl(snippet.author?.avatar)} alt="" />
                                                 <span>{snippet.author?.username}</span>
                                             </Link>
                                             <span className="badge badge-language">{snippet.language}</span>

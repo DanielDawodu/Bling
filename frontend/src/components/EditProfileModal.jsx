@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { userAPI } from '../utils/api';
+import { userAPI, normalizeUrl } from '../utils/api';
 import './EditProfileModal.css';
 
 function EditProfileModal({ user, onClose, onUpdate }) {
@@ -12,9 +11,9 @@ function EditProfileModal({ user, onClose, onUpdate }) {
         twitter: user.socialLinks?.twitter || ''
     });
     const [avatarFile, setAvatarFile] = useState(null);
-    const [previewAvatar, setPreviewAvatar] = useState(user.avatar);
+    const [previewAvatar, setPreviewAvatar] = useState(normalizeUrl(user.avatar));
     const [coverFile, setCoverFile] = useState(null);
-    const [previewCover, setPreviewCover] = useState(user.coverPhoto);
+    const [previewCover, setPreviewCover] = useState(normalizeUrl(user.coverPhoto));
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {

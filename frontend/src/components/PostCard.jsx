@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/auth-context';
-import { postAPI } from '../utils/api';
+import { postAPI, normalizeUrl } from '../utils/api';
 import VerificationBadge from './VerificationBadge';
 import ReportModal from './ReportModal';
 import ShareButton from './ShareButton';
@@ -74,8 +74,8 @@ function PostCard({ post, onDelete }) {
         <article className="tweet-card">
             <div className="tweet-avatar-col">
                 <Link to={`/profile/${post.author._id}`}>
-                    {post.author.avatar ? (
-                        <img src={post.author.avatar} alt={post.author.username} className="avatar avatar-md" />
+                    {post.author?.avatar ? (
+                        <img src={normalizeUrl(post.author.avatar)} alt={post.author.username} className="avatar avatar-md" />
                     ) : (
                         <div className="avatar avatar-md avatar-placeholder">
                             {post.author.username[0].toUpperCase()}
@@ -131,18 +131,17 @@ function PostCard({ post, onDelete }) {
                     <p>{post.content}</p>
                 </div>
 
-                {post.images && post.images.length > 0 && (
-                    <div className="tweet-media">
-                        {post.images.map((img, idx) => (
-                            <img key={idx} src={img} alt="Post content" loading="lazy" />
+                {(post.images?.length > 0 || post.videos?.length > 0) && (
+                    <div className={`post-media ${(post.images?.length || 0) + (post.videos?.length || 0) > 1 ? 'media-grid' : ''}`}>
+                        {post.images?.map((img, index) => (
+                            <div key={`img-${index}`} className="media-item">
+                                <img src={normalizeUrl(img)} alt="Post content" loading="lazy" />
+                            </div>
                         ))}
-                    </div>
-                )}
-
-                {post.videos && post.videos.length > 0 && (
-                    <div className="tweet-media">
-                        {post.videos.map((vid, idx) => (
-                            <video key={idx} src={vid} controls className="tweet-video" />
+                        {post.videos?.map((vid, index) => (
+                            <div key={`vid-${index}`} className="media-item">
+                                <video src={normalizeUrl(vid)} controls />
+                            </div>
                         ))}
                     </div>
                 )}

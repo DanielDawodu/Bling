@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import { userAPI, snippetAPI, adminAPI } from '../utils/api';
+import { userAPI, snippetAPI, adminAPI, normalizeUrl } from '../utils/api';
 import { useAuth } from '../context/auth-context';
 import PostCard from '../components/PostCard';
 import SnippetCard from '../components/SnippetCard';
@@ -138,7 +138,7 @@ function Profile() {
             <div className="profile-banner">
                 {profile.coverPhoto ? (
                     <img
-                        src={profile.coverPhoto}
+                        src={normalizeUrl(profile.coverPhoto)}
                         alt="Cover"
                         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                     />
@@ -151,7 +151,7 @@ function Profile() {
                 <div className="profile-top-row">
                     <div className="profile-avatar-container">
                         {profile.avatar ? (
-                            <img src={profile.avatar} alt={profile.username} className="profile-avatar-lg" />
+                            <img src={normalizeUrl(profile.avatar)} alt={profile.username} className="profile-avatar-lg" />
                         ) : (
                             <div className="profile-avatar-lg avatar-placeholder">
                                 {profile.username[0].toUpperCase()}

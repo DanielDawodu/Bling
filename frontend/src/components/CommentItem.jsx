@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { commentAPI } from '../utils/api';
+import { commentAPI, normalizeUrl } from '../utils/api';
 import { useAuth } from '../context/auth-context';
 import VerificationBadge from './VerificationBadge';
 
@@ -51,7 +51,7 @@ function CommentItem({ comment, onReplyAdded }) {
                 <div className="comment-avatar">
                     <Link to={`/profile/${comment.author?._id}`}>
                         <img
-                            src={comment.author?.avatar || 'https://via.placeholder.com/40'}
+                            src={normalizeUrl(comment.author?.avatar)}
                             alt={comment.author?.username || 'User'}
                             className="avatar avatar-md"
                         />

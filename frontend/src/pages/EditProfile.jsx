@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { userAPI } from '../utils/api';
+import { userAPI, normalizeUrl } from '../utils/api';
 import { useAuth } from '../context/auth-context';
 import './EditProfile.css';
 
@@ -49,8 +49,8 @@ function EditProfile() {
                         linkedin: user.socialLinks?.linkedin || '',
                         twitter: user.socialLinks?.twitter || ''
                     });
-                    setPreviewAvatar(user.avatar);
-                    setPreviewCover(user.coverPhoto);
+                    setPreviewAvatar(normalizeUrl(user.avatar));
+                    setPreviewCover(normalizeUrl(user.coverPhoto));
                 } catch (error) {
                     console.error('Failed to fetch user data', error);
                 } finally {

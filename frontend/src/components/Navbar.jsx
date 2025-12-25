@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/auth-context';
 import { useTheme } from '../context/ThemeContext';
+import { normalizeUrl } from '../utils/api';
 import NotificationDropdown from './NotificationDropdown';
 import './Navbar.css';
 
@@ -53,7 +54,7 @@ function Navbar() {
                                         onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                                     >
                                         {user?.avatar ? (
-                                            <img src={user.avatar} alt={user.username} className="avatar avatar-sm" />
+                                            <img src={normalizeUrl(user.avatar)} alt={user.username} className="avatar avatar-sm" />
                                         ) : (
                                             <div className="avatar avatar-sm avatar-placeholder">
                                                 {user?.username?.[0]?.toUpperCase()}

@@ -4,6 +4,7 @@ import { useAuth } from '../context/auth-context';
 import { useTheme } from '../context/ThemeContext';
 import { useNotifications } from '../context/NotificationContext';
 import VerificationBadge from './VerificationBadge';
+import { normalizeUrl } from '../utils/api';
 import './Sidebar.css';
 
 function Sidebar() {
@@ -117,7 +118,7 @@ function Sidebar() {
             <div className="sidebar-user" onClick={handleLogout}>
                 <div className="sidebar-user-info">
                     {user.avatar ? (
-                        <img src={user.avatar} alt={user.username} className="avatar avatar-md" />
+                        <img src={normalizeUrl(user.avatar)} alt={user.username || 'User'} className="avatar-img" />
                     ) : (
                         <div className="avatar avatar-md avatar-placeholder">
                             {user.username[0].toUpperCase()}

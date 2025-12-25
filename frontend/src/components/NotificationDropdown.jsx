@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useNotifications } from '../context/NotificationContext';
+import { normalizeUrl } from '../utils/api';
 import './NotificationDropdown.css';
 
 function NotificationDropdown() {
@@ -117,12 +118,7 @@ function NotificationDropdown() {
     };
 
     const getAvatarUrl = (notification) => {
-        if (notification.sender?.avatar) {
-            const avatar = notification.sender.avatar;
-            if (avatar.startsWith('http')) return avatar;
-            return avatar; // Changed from `http://localhost:5001${avatar}` to `avatar` for relative path
-        }
-        return null;
+        return normalizeUrl(notification.sender?.avatar);
     };
 
     return (
