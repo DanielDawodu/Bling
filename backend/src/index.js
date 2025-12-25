@@ -141,8 +141,18 @@ app.use('/api/search', searchRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/ai', aiRoutes);
 
-// ===== Health Check =====
-app.get('/api/health', (req, res) => res.json({ status: 'OK', message: 'Bling API is running' }));
+// ===== Root & Health Check =====
+app.get('/', (req, res) => res.json({
+  status: 'Bling API is Online',
+  version: '2.0.0',
+  endpoints: ['/api/health', '/api/auth', '/api/users/me']
+}));
+
+app.get('/api/health', (req, res) => res.json({
+  status: 'OK',
+  message: 'Bling API is running smoothly',
+  timestamp: new Date().toISOString()
+}));
 
 // ===== Error handling =====
 app.use((err, req, res, next) => {
