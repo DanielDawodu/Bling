@@ -4,7 +4,8 @@ import axios from 'axios';
 // Use VITE_API_URL for production, fallback to /api for local development
 const api = axios.create({
     baseURL: import.meta.env.VITE_API_URL || '/api',
-    withCredentials: true, // Important for session cookies
+    withCredentials: true,
+    timeout: 10000, // 10s timeout to prevent hanging
     headers: {
         'Content-Type': 'application/json'
     }
