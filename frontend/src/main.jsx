@@ -4,6 +4,10 @@ import App from './App';
 import './index.css';
 import { HelmetProvider } from 'react-helmet-async';
 
+console.log('🚀 Bling Frontend Starting...');
+console.log('📍 Mode:', import.meta.env.MODE);
+console.log('🔗 API URL:', import.meta.env.VITE_API_URL || '/api');
+
 // Register service worker for push notifications
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {

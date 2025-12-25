@@ -2,10 +2,19 @@ import axios from 'axios';
 
 // Create axios instance with default config
 // Use VITE_API_URL for production, fallback to /api for local development
+const getBaseURL = () => {
+    let url = import.meta.env.VITE_API_URL || '/api';
+    // If it's a full URL but missing /api, add it
+    if (url.startsWith('http') && !url.includes('/api')) {
+        url = url.endsWith('/') ? `${url}api` : `${url}/api`;
+    }
+    return url;
+};
+
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_URL || '/api',
+    baseURL: getBaseURL(),
     withCredentials: true,
-    timeout: 30000, // Increased to 30s for Vercel cold starts + DB connection
+    timeout: 30000,
     headers: {
         'Content-Type': 'application/json'
     }
