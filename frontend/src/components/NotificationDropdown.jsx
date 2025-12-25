@@ -120,7 +120,7 @@ function NotificationDropdown() {
         if (notification.sender?.avatar) {
             const avatar = notification.sender.avatar;
             if (avatar.startsWith('http')) return avatar;
-            return `http://localhost:5001${avatar}`;
+            return avatar; // Changed from `http://localhost:5001${avatar}` to `avatar` for relative path
         }
         return null;
     };

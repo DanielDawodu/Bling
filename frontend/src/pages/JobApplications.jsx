@@ -120,7 +120,7 @@ function JobApplications() {
 
                                     <div className="resume-section">
                                         <a
-                                            href={`http://localhost:5001${app.resume}`}
+                                            href={app.resume}
                                             target="_blank"
                                             rel="noopener noreferrer"
                                             className="resume-link"
@@ -146,7 +146,7 @@ function JobApplications() {
                     </div>
                 )}
             </div>
-        </div>
+        </div >
     );
 }
 
