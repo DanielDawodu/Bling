@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendVerificationEmail = async (to, token) => {
-    const verificationUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/verify-email?token=${token}`;
+    const verificationUrl = `${process.env.FRONTEND_URL || 'https://bling-frontend-v2.vercel.app'}/verify-email?token=${token}`;
 
     const mailOptions = {
         from: process.env.EMAIL_USER || 'noreply@bling-app.com',
@@ -71,7 +71,7 @@ export const sendVerificationEmail = async (to, token) => {
 };
 
 export const sendPasswordResetEmail = async (to, token) => {
-    const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password?token=${token}`;
+    const resetUrl = `${process.env.FRONTEND_URL || 'https://bling-frontend-v2.vercel.app'}/reset-password?token=${token}`;
 
     const mailOptions = {
         from: process.env.EMAIL_USER || 'noreply@bling-app.com',
