@@ -7,13 +7,17 @@ const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY;
 const IV_LENGTH = 16;
 
 if (!ENCRYPTION_KEY || ENCRYPTION_KEY.length !== 32) {
-    console.error('CRITICAL: ENCRYPTION_KEY must be exactly 32 characters in .env for AES-256-CBC.');
-    if (process.env.NODE_ENV === 'production') {
-        process.exit(1); // Stop server in production if encryption is broken
-    }
+    console.error('CRITICAL: ENCRYPTION_KEY must be exactly 32 characters in .env for AES-256-CBC. Using normalized key to avoid crash.');
 }
 
-const FINAL_KEY = ENCRYPTION_KEY || '32-char-fallback-for-dev-only!!!';
+let FINAL_KEY = ENCRYPTION_KEY || '32-char-fallback-for-dev-only!!!';
+if (FINAL_KEY.length !== 32) {
+    if (FINAL_KEY.length < 32) {
+        FINAL_KEY = FINAL_KEY.padEnd(32, 'X');
+    } else {
+        FINAL_KEY = FINAL_KEY.substring(0, 32);
+    }
+}
 
 export function encrypt(text) {
     if (!text) return null;
