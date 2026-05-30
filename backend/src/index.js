@@ -119,15 +119,26 @@ app.use(express.urlencoded({ extended: true, limit: '50kb' }));
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
+let sessionStore;
+try {
+  if (process.env.MONGO_URI) {
+    sessionStore = MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      touchAfter: 24 * 3600,
+    });
+  } else {
+    console.warn('⚠️ MONGO_URI missing from env. Session store will fallback to MemoryStore.');
+  }
+} catch (storeError) {
+  console.error('❌ Failed to initialize MongoStore:', storeError.message);
+}
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET || 'your-secret-key',
     resave: false,
     saveUninitialized: false,
-    store: MongoStore.create({
-      mongoUrl: process.env.MONGO_URI,
-      touchAfter: 24 * 3600,
-    }),
+    store: sessionStore,
     cookie: {
       maxAge: 1000 * 60 * 60 * 24 * 7,
       httpOnly: true,
