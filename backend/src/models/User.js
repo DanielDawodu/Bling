@@ -80,6 +80,10 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
+  displayName: {
+    type: String,
+    default: ''
+  },
   twoFactorSecret: {
     type: String,
     default: null
@@ -87,6 +91,36 @@ const userSchema = new mongoose.Schema({
   isTwoFactorEnabled: {
     type: Boolean,
     default: false
+  },
+  twoFactorBackupCodes: {
+    type: [String],
+    default: []
+  },
+  developerMode: {
+    type: Boolean,
+    default: false
+  },
+  developerApiKey: {
+    type: String,
+    default: null
+  },
+  developerWebhookUrl: {
+    type: String,
+    default: ''
+  },
+  notificationSettings: {
+    newFollowers: { type: Boolean, default: true },
+    postLikes: { type: Boolean, default: true },
+    comments: { type: Boolean, default: true },
+    mentions: { type: Boolean, default: true },
+    dms: { type: Boolean, default: true },
+    jobApplications: { type: Boolean, default: true },
+    blingAIUpdates: { type: Boolean, default: true }
+  },
+  privacyPreferences: {
+    visibility: { type: String, enum: ['public', 'private'], default: 'public' },
+    dmPermission: { type: String, enum: ['everyone', 'following', 'nobody'], default: 'everyone' },
+    showSynkId: { type: Boolean, default: true }
   },
   resetPasswordToken: String,
   resetPasswordExpires: Date,

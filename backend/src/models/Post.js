@@ -43,6 +43,11 @@ const postSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Comment'
     }],
+    type: {
+        type: String,
+        enum: ['quick', 'article'],
+        default: 'quick'
+    },
     createdAt: {
         type: Date,
         default: Date.now

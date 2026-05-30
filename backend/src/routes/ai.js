@@ -2,9 +2,10 @@ import express from 'express';
 import { isAuthenticated } from '../middleware/auth-middleware.js';
 import User from '../models/User.js';
 import Post from '../models/Post.js';
-import { auditUserVerification, chatWithBlingAI } from '../services/gemini.js';
+import { auditUserVerification, chatWithBlingAI, auditContent } from '../services/openai.js';
 
 const router = express.Router();
+console.log("--- AI ROUTES LOADED ---");
 
 /**
  * Audit current user for verification
@@ -41,6 +42,30 @@ router.post('/audit-verification', isAuthenticated, async (req, res) => {
         res.json(result);
     } catch (error) {
         console.error('AI Verification Audit Error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+/**
+ * Audit content (jobs, snippets, posts)
+ */
+router.post('/audit-content', isAuthenticated, async (req, res) => {
+    try {
+        const { type, data } = req.body;
+
+        if (!type || !data) {
+            return res.status(400).json({ error: 'Type and data are required' });
+        }
+
+        const validTypes = ['job', 'snippet', 'post'];
+        if (!validTypes.includes(type)) {
+            return res.status(400).json({ error: 'Invalid content type' });
+        }
+
+        const result = await auditContent({ type, data });
+        res.json(result);
+    } catch (error) {
+        console.error('Content Audit Error:', error);
         res.status(500).json({ error: error.message });
     }
 });

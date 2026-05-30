@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcrypt';
 import passport from '../config/passport.js';
 import User from '../models/User.js';
+import Session from '../models/Session.js';
 import { isAuthenticated } from '../middleware/auth-middleware.js';
 import crypto from 'crypto';
 import { sendVerificationEmail, sendPasswordResetEmail } from '../utils/email.js';
@@ -16,6 +17,54 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const router = express.Router();
+
+function generateBackupCodes() {
+    const codes = [];
+    for (let i = 0; i < 6; i++) {
+        const code = crypto.randomBytes(4).toString('hex').toUpperCase();
+        codes.push(`${code.slice(0, 4)}-${code.slice(4)}`);
+    }
+    return codes;
+}
+
+function getUserResponse(user) {
+    return {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        displayName: user.displayName || '',
+        avatar: user.avatar || '',
+        coverPhoto: user.coverPhoto || '',
+        bio: user.bio || '',
+        dateOfBirth: user.dateOfBirth,
+        socialLinks: user.socialLinks || {},
+        followers: user.followers || [],
+        following: user.following || [],
+        isAdmin: user.isAdmin || false,
+        isVerified: user.isVerified || false,
+        isSuspended: user.isSuspended || false,
+        isEmailVerified: user.isEmailVerified || false,
+        isTwoFactorEnabled: user.isTwoFactorEnabled || false,
+        developerMode: user.developerMode || false,
+        developerApiKey: user.developerApiKey || null,
+        developerWebhookUrl: user.developerWebhookUrl || '',
+        notificationSettings: user.notificationSettings || {
+            newFollowers: true,
+            postLikes: true,
+            comments: true,
+            mentions: true,
+            dms: true,
+            jobApplications: true,
+            blingAIUpdates: true
+        },
+        privacyPreferences: user.privacyPreferences || {
+            visibility: 'public',
+            dmPermission: 'everyone',
+            showSynkId: true
+        },
+        createdAt: user.createdAt
+    };
+}
 
 // Signup route
 router.post('/signup', async (req, res) => {
@@ -75,7 +124,7 @@ router.post('/signup', async (req, res) => {
 
 // Login route
 router.post('/login', (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
+    passport.authenticate('local', async (err, user, info) => {
         if (err) {
             return res.status(500).json({ error: 'Server error during login' });
         }
@@ -84,27 +133,12 @@ router.post('/login', (req, res, next) => {
             return res.status(401).json({ error: info.message || 'Invalid credentials' });
         }
 
-        if (!user.isEmailVerified) {
+        // In development, allow login without email verification to ease testing
+        if (!user.isEmailVerified && process.env.NODE_ENV !== 'development') {
             return res.status(401).json({ error: 'Please verify your email to log in' });
         }
 
-        const userResponse = {
-            id: user._id,
-            username: user.username,
-            email: user.email,
-            avatar: user.avatar,
-            coverPhoto: user.coverPhoto,
-            bio: user.bio,
-            socialLinks: user.socialLinks,
-            followers: user.followers,
-            following: user.following,
-            isAdmin: user.isAdmin,
-            isVerified: user.isVerified,
-            isSuspended: user.isSuspended,
-            isEmailVerified: user.isEmailVerified,
-            isTwoFactorEnabled: user.isTwoFactorEnabled,
-            createdAt: user.createdAt
-        };
+        const userResponse = getUserResponse(user);
 
         if (user.isTwoFactorEnabled) {
             return res.json({
@@ -114,9 +148,38 @@ router.post('/login', (req, res, next) => {
             });
         }
 
-        req.login(user, (err) => {
+        req.login(user, async (err) => {
             if (err) {
                 return res.status(500).json({ error: 'Error logging in' });
+            }
+            // Create a Session record for richer data
+            try {
+                const userAgent = req.headers['user-agent'] || '';
+                let device = 'Unknown Device';
+                if (userAgent.includes('Windows')) device = 'Windows PC';
+                else if (userAgent.includes('Macintosh')) device = 'Mac';
+                else if (userAgent.includes('iPhone')) device = 'iPhone';
+                else if (userAgent.includes('iPad')) device = 'iPad';
+                else if (userAgent.includes('Android')) device = 'Android Phone';
+                else if (userAgent.includes('Linux')) device = 'Linux PC';
+
+                let location = 'Localhost';
+                if (req.ip && req.ip !== '127.0.0.1' && req.ip !== '::1' && req.ip !== '::ffff:127.0.0.1') {
+                    location = 'San Francisco, CA';
+                }
+
+                await Session.create({
+                    user: user._id,
+                    sessionId: req.sessionID,
+                    ipAddress: req.ip || '127.0.0.1',
+                    userAgent: userAgent,
+                    device: device,
+                    location: location,
+                    createdAt: new Date(),
+                    active: true
+                });
+            } catch (e) {
+                console.error('Session creation error:', e);
             }
             res.json({ message: 'Login successful', user: userResponse });
         });
@@ -124,36 +187,27 @@ router.post('/login', (req, res, next) => {
 });
 
 // Logout route
-router.post('/logout', (req, res) => {
-    req.logout((err) => {
-        if (err) {
-            return res.status(500).json({ error: 'Error logging out' });
+router.post('/logout', async (req, res) => {
+    try {
+        // Remove Session document linked to this session
+        if (req.sessionID) {
+            await Session.findOneAndUpdate({ sessionId: req.sessionID }, { active: false });
         }
-        res.json({ message: 'Logout successful' });
-    });
+        req.logout((err) => {
+            if (err) {
+                return res.status(500).json({ error: 'Error logging out' });
+            }
+            res.json({ message: 'Logout successful' });
+        });
+    } catch (e) {
+        console.error('Logout session cleanup error:', e);
+        res.status(500).json({ error: 'Server error during logout' });
+    }
 });
 
 // Get current user
 router.get('/me', isAuthenticated, (req, res) => {
-    const userResponse = {
-        id: req.user._id,
-        username: req.user.username,
-        email: req.user.email,
-        avatar: req.user.avatar,
-        coverPhoto: req.user.coverPhoto,
-        bio: req.user.bio,
-        dateOfBirth: req.user.dateOfBirth,
-        socialLinks: req.user.socialLinks,
-        followers: req.user.followers,
-        following: req.user.following,
-        isAdmin: req.user.isAdmin,
-        isVerified: req.user.isVerified,
-        isSuspended: req.user.isSuspended,
-        isEmailVerified: req.user.isEmailVerified,
-        isTwoFactorEnabled: req.user.isTwoFactorEnabled,
-        createdAt: req.user.createdAt
-    };
-
+    const userResponse = getUserResponse(req.user);
     res.json({ user: userResponse });
 });
 
@@ -323,10 +377,17 @@ router.post('/2fa/verify', isAuthenticated, async (req, res) => {
         const user = await User.findById(req.user._id);
         user.twoFactorSecret = encrypt(secret); // ENCRYPT the secret before saving
         user.isTwoFactorEnabled = true;
+
+        // Generate backup codes
+        const rawBackupCodes = generateBackupCodes();
+        user.twoFactorBackupCodes = rawBackupCodes.map(code => encrypt(code));
         await user.save();
 
         req.session.tempTwoFactorSecret = undefined;
-        res.json({ message: 'Two-factor authentication enabled successfully' });
+        res.json({
+            message: 'Two-factor authentication enabled successfully',
+            backupCodes: rawBackupCodes
+        });
     } catch (error) {
         console.error('2FA Verify error:', error);
         res.status(500).json({ error: 'Error verifying 2FA token' });
@@ -347,17 +408,31 @@ router.post('/2fa/login-verify', async (req, res) => {
             return res.status(400).json({ error: 'Invalid request' });
         }
 
-        const decryptedSecret = decrypt(user.twoFactorSecret);
+        // Try checking if it's a backup code first
+        let isBackupCode = false;
+        const cleanToken = token ? token.toUpperCase().trim() : '';
+        const decryptedBackupCodes = (user.twoFactorBackupCodes || []).map(code => decrypt(code));
+        const matchingIndex = decryptedBackupCodes.indexOf(cleanToken);
 
-        const verified = speakeasy.totp.verify({
-            secret: decryptedSecret,
-            encoding: 'base32',
-            token: token,
-            window: 2 // Tolerance for time drift (+/- 60s)
-        });
+        if (matchingIndex !== -1) {
+            isBackupCode = true;
+            // Remove the used backup code
+            user.twoFactorBackupCodes.splice(matchingIndex, 1);
+            await user.save();
+        }
 
-        if (!verified) {
-            return res.status(400).json({ error: 'Invalid verification code' });
+        if (!isBackupCode) {
+            const decryptedSecret = decrypt(user.twoFactorSecret);
+            const verified = speakeasy.totp.verify({
+                secret: decryptedSecret,
+                encoding: 'base32',
+                token: token,
+                window: 2 // Tolerance for time drift (+/- 60s)
+            });
+
+            if (!verified) {
+                return res.status(400).json({ error: 'Invalid verification code' });
+            }
         }
 
         req.login(user, (err) => {
@@ -365,15 +440,7 @@ router.post('/2fa/login-verify', async (req, res) => {
                 return res.status(500).json({ error: 'Error logging in' });
             }
 
-            const userResponse = {
-                id: user._id,
-                username: user.username,
-                email: user.email,
-                avatar: user.avatar,
-                isAdmin: user.isAdmin,
-                isTwoFactorEnabled: user.isTwoFactorEnabled
-            };
-
+            const userResponse = getUserResponse(user);
             res.json({ message: 'Login successful', user: userResponse });
         });
     } catch (error) {
@@ -382,25 +449,23 @@ router.post('/2fa/login-verify', async (req, res) => {
     }
 });
 
-// 2FA Disable
+// 2FA Disable (requires password confirmation)
 router.post('/2fa/disable', isAuthenticated, async (req, res) => {
     try {
-        const { token } = req.body;
+        const { password } = req.body;
+        if (!password) {
+            return res.status(400).json({ error: 'Password is required' });
+        }
+
         const user = await User.findById(req.user._id);
-
-        const verified = speakeasy.totp.verify({
-            secret: decrypt(user.twoFactorSecret), // DECRYPT before verifying
-            encoding: 'base32',
-            token: token,
-            window: 1 // Higher tolerance for time drift (+/- 30s)
-        });
-
-        if (!verified) {
-            return res.status(400).json({ error: 'Invalid verification code' });
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ error: 'Incorrect password' });
         }
 
         user.twoFactorSecret = null;
         user.isTwoFactorEnabled = false;
+        user.twoFactorBackupCodes = [];
         await user.save();
 
         res.json({ message: 'Two-factor authentication disabled successfully' });
@@ -409,6 +474,39 @@ router.post('/2fa/disable', isAuthenticated, async (req, res) => {
         res.status(500).json({ error: 'Error disabling 2FA' });
     }
 });
+
+// GET 2FA Backup codes
+router.get('/2fa/backup-codes', isAuthenticated, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        if (!user.isTwoFactorEnabled || !user.twoFactorBackupCodes?.length) {
+            return res.json({ backupCodes: [] });
+        }
+        const decryptedCodes = user.twoFactorBackupCodes.map(code => decrypt(code)).filter(Boolean);
+        res.json({ backupCodes: decryptedCodes });
+    } catch (error) {
+        console.error('Get backup codes error:', error);
+        res.status(500).json({ error: 'Server error retrieving backup codes' });
+    }
+});
+
+// Regenerate 2FA Backup codes
+router.post('/2fa/backup-codes/regenerate', isAuthenticated, async (req, res) => {
+    try {
+        const user = await User.findById(req.user._id);
+        if (!user.isTwoFactorEnabled) {
+            return res.status(400).json({ error: '2FA is not enabled' });
+        }
+        const rawBackupCodes = generateBackupCodes();
+        user.twoFactorBackupCodes = rawBackupCodes.map(code => encrypt(code));
+        await user.save();
+        res.json({ backupCodes: rawBackupCodes });
+    } catch (error) {
+        console.error('Regenerate backup codes error:', error);
+        res.status(500).json({ error: 'Server error regenerating backup codes' });
+    }
+});
+
 
 // Forgot Password
 router.post('/forgot-password', async (req, res) => {

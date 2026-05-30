@@ -1,7 +1,15 @@
+/* =========================================================
+   Profile Page Styles
+   ========================================================= */
+
 .profile-page {
-    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow-y: auto;
 }
 
+/* ── Sticky header bar ────────────────────────────────── */
 .profile-header {
     padding: 0 var(--spacing-md);
     height: 53px;
@@ -63,10 +71,24 @@
     color: var(--color-text-secondary);
 }
 
+/* ── Cover photo – aspect-ratio 3 : 1 ─────────────────── */
 .profile-banner {
-    height: 200px;
-    background-color: var(--color-bg-tertiary);
     position: relative;
+    width: 100%;
+    /* 3:1 ratio */
+    aspect-ratio: 3 / 1;
+    /* Fallback for browsers without aspect-ratio */
+    min-height: 160px;
+    max-height: 280px;
+    overflow: hidden;
+    background-color: var(--color-bg-tertiary);
+}
+
+.profile-cover-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
 }
 
 .banner-placeholder {
@@ -74,39 +96,64 @@
     height: 100%;
 }
 
+/* ── Details area ─────────────────────────────────────── */
 .profile-details {
     padding: 0 var(--spacing-lg);
     position: relative;
 }
 
+/* ── Top row: avatar + action buttons ────────────────── */
 .profile-top-row {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    height: 70px;
-    /* Space for avatar overlap */
+    align-items: flex-end;
+    /* Enough space for avatar overlap (avatar is translated up) */
+    padding-top: 12px;
+    padding-bottom: var(--spacing-sm);
 }
 
+/* Avatar container – positioned so 20 % overlaps the banner */
 .profile-avatar-container {
-    margin-top: -15%;
-    /* Overlap banner */
+    /* The avatar shifts up by ~20% of its own size */
+    transform: translateY(-20%);
     border-radius: 50%;
-    padding: 4px;
+    /* Thin visible ring */
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    /* White/dark background gap ring */
+    box-shadow: 0 0 0 4px var(--color-bg-primary);
     background-color: var(--color-bg-primary);
+    flex-shrink: 0;
 }
 
 .profile-avatar-lg {
-    width: 134px;
-    height: 134px;
+    width: 120px;
+    height: 120px;
     border-radius: 50%;
     object-fit: cover;
-    border: 4px solid var(--color-bg-primary);
+    display: block;
 }
 
+/* Placeholder initial */
+.avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-accent), hsl(260 70% 50%));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+/* ── Action buttons ───────────────────────────────────── */
 .profile-actions {
     display: flex;
     gap: var(--spacing-sm);
-    margin-top: var(--spacing-md);
+    align-items: center;
+    padding-bottom: 4px;
 }
 
 .edit-profile-btn {
@@ -131,15 +178,20 @@
     fill: currentColor;
 }
 
+/* ── Info section ─────────────────────────────────────── */
 .profile-info-section {
-    margin-top: var(--spacing-sm);
+    margin-top: calc(var(--spacing-sm) - 4px);
 }
 
 .profile-name {
     font-size: 1.25rem;
     font-weight: 800;
-    margin: 0;
+    margin: 0 0 2px;
     line-height: 1.2;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
 }
 
 .profile-handle {
@@ -152,8 +204,10 @@
     margin-bottom: var(--spacing-md);
     color: var(--color-text-primary);
     font-size: var(--font-size-base);
+    line-height: 1.5;
 }
 
+/* ── Meta links (website, join date) ─────────────────── */
 .profile-meta {
     display: flex;
     flex-wrap: wrap;
@@ -176,15 +230,17 @@
 }
 
 .meta-icon {
-    width: 18px;
-    height: 18px;
+    width: 16px;
+    height: 16px;
     fill: currentColor;
+    flex-shrink: 0;
 }
 
+/* ── Follow stats ─────────────────────────────────────── */
 .profile-follow-stats {
     display: flex;
     gap: var(--spacing-lg);
-    margin-bottom: var(--spacing-lg);
+    margin-bottom: var(--spacing-md);
 }
 
 .stat-link {
@@ -203,32 +259,152 @@
     margin-right: 4px;
 }
 
+/* ── SynkID Badge ─────────────────────────────────────── */
+.synkid-badge {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: var(--color-accent-muted);
+    border: 1px solid rgba(124, 111, 239, 0.4);
+    border-radius: 6px;
+    padding: 3px 9px 3px 6px;
+    font-family: var(--font-mono, monospace);
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: var(--color-accent);
+    cursor: default;
+    transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
+    vertical-align: middle;
+}
+
+.synkid-badge:hover {
+    border-color: var(--color-accent);
+    background: rgba(124, 111, 239, 0.25);
+    box-shadow: 0 0 10px rgba(124, 111, 239, 0.3);
+}
+
+.synkid-hex {
+    width: 16px;
+    height: 16px;
+    fill: none;
+    stroke: var(--color-accent);
+    stroke-width: 1.5;
+    flex-shrink: 0;
+}
+
+.synkid-label {
+    letter-spacing: 0.03em;
+}
+
+/* Tooltip */
+.synkid-tooltip {
+    display: none;
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--color-bg-secondary);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    font-size: 0.72rem;
+    font-family: var(--font-sans, sans-serif);
+    white-space: nowrap;
+    color: var(--color-text-primary);
+    box-shadow: 0 4px 16px rgba(0,0,0,.4);
+    z-index: 100;
+    pointer-events: none;
+}
+
+.synkid-tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: var(--color-border);
+}
+
+.synkid-badge:hover .synkid-tooltip {
+    display: block;
+}
+
+/* ── Developer Stats row ─────────────────────────────── */
+.dev-stats-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: var(--spacing-md);
+}
+
+.dev-stat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px 4px 8px;
+    border-radius: var(--radius-full);
+    background: hsl(var(--chip-hue, 220) 80% 20% / .25);
+    border: 1px solid hsl(var(--chip-hue, 220) 80% 50% / .35);
+    font-size: 0.72rem;
+    font-family: var(--font-mono, monospace);
+    transition: background 0.2s;
+}
+
+.dev-stat-chip:hover {
+    background: hsl(var(--chip-hue, 220) 80% 20% / .4);
+}
+
+.dev-stat-rank {
+    color: hsl(var(--chip-hue, 220) 80% 70%);
+    font-weight: 700;
+    font-size: 0.65rem;
+}
+
+.dev-stat-tag {
+    color: hsl(var(--chip-hue, 220) 70% 80%);
+    font-weight: 600;
+}
+
+.dev-stat-count {
+    color: var(--color-text-secondary);
+    font-size: 0.65rem;
+}
+
+/* ── Tabs ─────────────────────────────────────────────── */
 .profile-tabs {
     display: flex;
+    overflow-x: auto;
     border-bottom: 1px solid var(--color-border);
     margin: 0 calc(var(--spacing-lg) * -1);
-    /* Extend to edges */
+    scrollbar-width: none;
 }
+
+.profile-tabs::-webkit-scrollbar { display: none; }
 
 .profile-tab {
     flex: 1;
+    min-width: max-content;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 16px 0;
+    padding: 14px 16px 0;
     cursor: pointer;
     position: relative;
     color: var(--color-text-secondary);
     font-weight: 500;
-    transition: background-color var(--transition-fast);
+    font-size: 0.9rem;
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+    user-select: none;
 }
 
 .profile-tab:hover {
-    background-color: rgba(239, 243, 244, 0.1);
+    background-color: rgba(239, 243, 244, 0.08);
 }
 
 [data-theme="light"] .profile-tab:hover {
-    background-color: rgba(15, 20, 25, 0.1);
+    background-color: rgba(15, 20, 25, 0.05);
 }
 
 .profile-tab.active {
@@ -236,7 +412,150 @@
     color: var(--color-text-primary);
 }
 
+.profile-tab span {
+    padding-bottom: 14px;
+}
+
+/* Sliding bottom indicator */
+.tab-indicator {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    background: var(--color-accent);
+}
+
+/* ── Content area ─────────────────────────────────────── */
 .profile-content {
     margin: 0 calc(var(--spacing-lg) * -1);
-    /* Extend to edges */
+}
+
+/* ── Articles feed ────────────────────────────────────── */
+.articles-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.article-card {
+    display: flex;
+    gap: var(--spacing-md);
+    padding: var(--spacing-lg);
+    border-bottom: 1px solid var(--color-border);
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s;
+}
+
+.article-card:hover {
+    background: rgba(239, 243, 244, 0.05);
+}
+
+[data-theme="light"] .article-card:hover {
+    background: rgba(15, 20, 25, 0.04);
+}
+
+.article-card-thumb {
+    flex-shrink: 0;
+    width: 90px;
+    height: 70px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: var(--color-bg-tertiary);
+}
+
+.article-card-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.article-card-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.article-card-title {
+    font-size: 1rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.3;
+    color: var(--color-text-primary);
+    /* Clamp to 2 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.article-card-excerpt {
+    font-size: 0.82rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+    line-height: 1.45;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.article-card-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.article-read-time {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+}
+
+.article-date {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+}
+
+.article-tag {
+    font-size: 0.7rem;
+    color: var(--color-accent);
+    font-family: var(--font-mono, monospace);
+    background: var(--color-accent-muted);
+    border-radius: 4px;
+    padding: 1px 5px;
+}
+
+/* ── Empty state ──────────────────────────────────────── */
+.empty-state {
+    padding: var(--spacing-xl) var(--spacing-lg);
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+}
+
+/* ── Responsive tweaks ────────────────────────────────── */
+@media (max-width: 600px) {
+    .profile-avatar-lg,
+    .avatar-placeholder {
+        width: 88px;
+        height: 88px;
+    }
+
+    .article-card-thumb {
+        display: none;
+    }
+
+    .profile-tabs {
+        gap: 0;
+    }
 }

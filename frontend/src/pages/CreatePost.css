@@ -92,3 +92,8 @@
     height: 22px;
     fill: currentColor;
 }
+
+.quick-post-textarea::placeholder {
+    color: #3a3a5a !important;
+    font-family: var(--font-mono) !important;
+}

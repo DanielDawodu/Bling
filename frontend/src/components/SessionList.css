@@ -1,0 +1,28 @@
+.session-list {
+  margin-top: 1rem;
+}
+
+.session-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.session-table th,
+.session-table td {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  text-align: left;
+}
+
+.session-table tr.active {
+  background-color: #e6f7ff;
+}
+
+.btn-revoke {
+  color: #d32f2f;
+  border-color: #d32f2f;
+}
+
+.error {
+  color: #d32f2f;
+}

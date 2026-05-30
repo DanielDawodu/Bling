@@ -1,44 +1,78 @@
+/* ── Conversation page — WhatsApp-style layout ───────────────────────────── */
+/* Static header at top, static input at bottom, scrollable messages in between */
+
 .conversation-page {
     display: flex;
     flex-direction: column;
-    height: 100vh;
+    height: 100%;
+    overflow: hidden;
 }
 
+/* ── Static header (pinned to top) ─────────────────────────────────────────── */
 .conversation-header {
-    padding: 0 var(--spacing-md);
-    height: 53px;
+    padding: 0 12px;
+    height: 48px;
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
-    background: rgba(0, 0, 0, 0.65);
+    gap: 10px;
+    background: rgba(8, 8, 16, 0.92);
     backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
     z-index: 10;
 }
 
-[data-theme="light"] .conversation-header {
-    background: rgba(255, 255, 255, 0.85);
+.back-btn {
+    color: var(--color-text-secondary);
+    padding: 6px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: color 0.15s, background 0.15s;
+}
+.back-btn:hover {
+    color: var(--color-accent);
+    background: var(--color-accent-muted);
+}
+.back-icon {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
 }
 
 .conversation-user-info {
     display: flex;
     align-items: center;
-    gap: var(--spacing-md);
+    gap: 8px;
     text-decoration: none;
     color: inherit;
     flex: 1;
+    min-width: 0;
+}
+.conversation-user-info:hover .conversation-username {
+    color: var(--color-accent);
 }
 
 .conversation-username {
-    font-weight: 700;
-    font-size: 1.1rem;
+    font-weight: 600;
+    font-size: var(--text-sm);
+    color: var(--color-text-primary);
+    transition: color 0.15s;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+/* ── Scrollable messages area ──────────────────────────────────────────────── */
 .messages-container {
     flex: 1;
     overflow-y: auto;
-    padding: var(--spacing-lg);
+    padding: 16px;
     display: flex;
     flex-direction: column;
+    background: var(--color-bg-surface);
 }
 
 .empty-conversation {
@@ -50,23 +84,29 @@
 }
 
 .empty-content h3 {
-    font-size: 1.5rem;
-    margin-bottom: var(--spacing-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-base);
+    color: var(--color-text-primary);
+    margin-bottom: 6px;
 }
 
 .empty-content p {
-    color: var(--color-text-secondary);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    line-height: 1.6;
 }
 
 .messages-list {
     display: flex;
     flex-direction: column;
-    gap: var(--spacing-sm);
+    gap: 6px;
+    margin-top: auto; /* push messages to bottom like WhatsApp */
 }
 
+/* ── Message bubbles ───────────────────────────────────────────────────────── */
 .message {
     display: flex;
-    max-width: 70%;
+    max-width: 72%;
 }
 
 .message.sent {
@@ -78,101 +118,136 @@
 }
 
 .message-bubble {
-    padding: 12px 16px;
-    border-radius: 24px;
-    font-size: 0.95rem;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: var(--text-sm);
     line-height: 1.5;
     word-wrap: break-word;
     position: relative;
 }
 
 .message.sent .message-bubble {
-    background-color: var(--color-primary);
-    color: white;
+    background: linear-gradient(135deg, #5a4fd6, #7c6fef);
+    color: #fff;
     border-bottom-right-radius: 4px;
 }
 
 .message.received .message-bubble {
-    background-color: var(--color-bg-tertiary);
+    background: var(--color-bg-elevated);
     color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
     border-bottom-left-radius: 4px;
 }
 
-[data-theme="light"] .message.received .message-bubble {
-    background-color: var(--color-bg-secondary);
+.message-bubble p {
+    margin: 0;
 }
 
 .message-time {
     display: block;
-    font-size: 0.7rem;
+    font-family: var(--font-mono);
+    font-size: 0.58rem;
     margin-top: 4px;
-    opacity: 0.7;
+    opacity: 0.6;
     text-align: right;
 }
 
+/* ── Static input (pinned to bottom) ───────────────────────────────────────── */
 .message-input-container {
-    padding: var(--spacing-md);
+    padding: 8px 12px;
     border-top: 1px solid var(--color-border);
-    background-color: var(--color-bg-primary);
+    background: var(--color-bg-base);
+    flex-shrink: 0;
 }
 
 .message-input-form {
     display: flex;
     align-items: center;
-    gap: var(--spacing-sm);
-    background-color: var(--color-bg-tertiary);
-    padding: 4px;
-    border-radius: 24px;
+    gap: 6px;
+    background: var(--color-bg-elevated);
+    padding: 4px 6px;
+    border-radius: 8px;
+    border: 1px solid var(--color-border);
+    transition: border-color 0.15s;
 }
 
-[data-theme="light"] .message-input-form {
-    background-color: var(--color-bg-secondary);
+.message-input-form:focus-within {
+    border-color: var(--color-accent);
 }
 
 .message-input {
     flex: 1;
     background: transparent;
     border: none;
-    padding: 8px;
+    padding: 8px 6px;
     color: var(--color-text-primary);
-    font-size: 0.95rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+}
+
+.message-input::placeholder {
+    color: var(--color-text-muted);
+    font-family: var(--font-mono);
 }
 
 .message-input:focus {
     outline: none;
 }
 
-.attachment-btn {
-    color: var(--color-primary);
+.attachment-btn,
+.send-btn {
+    background: none;
+    border: none;
+    padding: 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    color: var(--color-text-muted);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s, background 0.15s;
 }
 
-.send-btn {
-    color: var(--color-primary);
+.attachment-btn:hover,
+.send-btn:hover {
+    color: var(--color-accent);
+    background: var(--color-accent-muted);
 }
 
 .send-btn:disabled {
-    color: var(--color-text-secondary);
-    opacity: 0.5;
+    color: var(--color-text-muted);
+    opacity: 0.3;
+    cursor: not-allowed;
 }
 
+.icon-sm {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+/* ── File preview ──────────────────────────────────────────────────────────── */
 .file-preview {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    padding: 8px;
-    background-color: var(--color-bg-secondary);
-    border-radius: var(--radius-md);
-    margin-bottom: 8px;
+    gap: 6px;
+    padding: 6px 8px;
+    background: var(--color-bg-elevated);
+    border-radius: 6px;
+    margin-bottom: 6px;
+    border: 1px solid var(--color-border);
 }
 
 .file-preview-item {
-    background-color: var(--color-bg-primary);
-    padding: 4px 8px;
+    background: var(--color-bg-surface);
+    padding: 3px 8px;
     border-radius: 4px;
-    font-size: 0.85rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 6px;
+    color: var(--color-text-secondary);
 }
 
 .remove-file-btn {
@@ -180,16 +255,35 @@
     border: none;
     color: var(--color-error);
     cursor: pointer;
-    font-size: 1.1rem;
+    font-size: 0.9rem;
     padding: 0;
+    line-height: 1;
 }
 
+/* ── Attachments in messages ───────────────────────────────────────────────── */
 .message-attachments {
-    margin-top: 8px;
+    margin-top: 6px;
 }
 
 .message-attachment {
     max-width: 100%;
-    border-radius: 12px;
+    border-radius: 8px;
     margin-top: 4px;
+}
+
+.message-file {
+    color: var(--color-accent);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    background: var(--color-accent-muted);
+    border-radius: 4px;
+    margin-top: 4px;
+}
+.message-file:hover {
+    text-decoration: underline;
 }

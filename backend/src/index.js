@@ -1,4 +1,8 @@
-import './loadEnv.js';
+// backend/src/utils/index.js
+import dotenv from "dotenv";
+dotenv.config();
+console.log("Environment variables loaded.");
+
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
@@ -7,10 +11,13 @@ import MongoStore from 'connect-mongo';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import mongoSanitize from 'express-mongo-sanitize';
-import passport from './config/passport.js';
+import passport from 'passport';
+import './config/passport.js';
+
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+// Routes (relative to utils/index.js)
 import authRoutes from './routes/auth.js';
 import userRoutes from './routes/users.js';
 import postRoutes from './routes/posts.js';
@@ -19,10 +26,12 @@ import messageRoutes from './routes/messages.js';
 import jobRoutes from './routes/jobs.js';
 import snippetRoutes from './routes/snippets.js';
 import notificationRoutes from './routes/notifications.js';
+import sessionRoutes from './routes/sessions.js';
 import adminRoutes from './routes/admin.js';
 import searchRoutes from './routes/search.js';
 import reportsRoutes from './routes/reports.js';
 import aiRoutes from './routes/ai.js';
+
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -75,7 +84,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(helmet({ crossOriginResourcePolicy: { policy: "cross-origin" } }));
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(mongoSanitize());
 
 const allowedOrigins = [
@@ -84,22 +93,21 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
-app.use(cors({
-  origin: true, // Be extremely permissive for debugging
-  credentials: true
-}));
-
-app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', environment: process.env.NODE_ENV, vercel: !!process.env.VERCEL });
-});
+app.use(
+  cors({
+    origin: true, // Be extremely permissive for debugging
+    credentials: true,
+  })
+);
 
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: process.env.NODE_ENV === 'production' ? 100 : 1000
+  max: process.env.NODE_ENV === 'production' ? 100 : 1000,
 });
+
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: process.env.NODE_ENV === 'production' ? 20 : 100
+  max: process.env.NODE_ENV === 'production' ? 20 : 100,
 });
 
 app.use('/api/', globalLimiter);
@@ -110,21 +118,23 @@ app.use(express.urlencoded({ extended: true, limit: '50kb' }));
 
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'your-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  store: MongoStore.create({
-    mongoUrl: process.env.MONGO_URI,
-    touchAfter: 24 * 3600
-  }),
-  cookie: {
-    maxAge: 1000 * 60 * 60 * 24 * 7,
-    httpOnly: true,
-    secure: true,
-    sameSite: 'none'
-  }
-}));
+app.use(
+  session({
+    secret: process.env.SESSION_SECRET || 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: process.env.MONGO_URI,
+      touchAfter: 24 * 3600,
+    }),
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+    },
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -142,24 +152,32 @@ app.use('/api/admin', adminRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/sessions', sessionRoutes);
 
 // ===== Root & Health Check =====
-app.get('/', (req, res) => res.json({
-  status: 'Bling API is Online',
-  version: '2.0.0',
-  endpoints: ['/api/health', '/api/auth', '/api/users/me']
-}));
+app.get('/', (req, res) =>
+  res.json({
+    status: 'Bling API is Online',
+    version: '2.0.0',
+    endpoints: ['/api/health', '/api/auth', '/api/users/me'],
+  })
+);
 
-app.get('/api/health', (req, res) => res.json({
-  status: 'OK',
-  message: 'Bling API is running smoothly',
-  timestamp: new Date().toISOString()
-}));
+app.get('/api/health', (req, res) =>
+  res.json({
+    status: 'OK',
+    message: 'Bling API is running smoothly',
+    timestamp: new Date().toISOString(),
+  })
+);
 
 // ===== Error handling =====
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(err.status || 500).json({ error: process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message });
+  res.status(err.status || 500).json({
+    error:
+      process.env.NODE_ENV === 'production' ? 'Internal server error' : err.message,
+  });
 });
 
 // ===== 404 =====
@@ -168,7 +186,9 @@ app.use((req, res) => res.status(404).json({ error: 'Route not found' }));
 // Only listen locally (not on Vercel)
 if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
   const PORT = process.env.BACKEND_PORT || 5001;
-  app.listen(PORT, () => console.log(`🚀 Backend running on http://localhost:${PORT}`));
+  app.listen(PORT, () =>
+    console.log(`🚀 Backend running on http://localhost:${PORT}`)
+  );
 }
 
 export default app;

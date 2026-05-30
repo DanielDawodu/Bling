@@ -219,18 +219,22 @@ router.get('/:id', async (req, res) => {
 // Create new post
 router.post('/', isAuthenticated, async (req, res) => {
     try {
-        const { title, content, codeSnippet, tags } = req.body;
+        const { title, content, codeSnippet, tags, type } = req.body;
 
-        if (!title || !content) {
-            return res.status(400).json({ error: 'Title and content are required' });
+        const postType = type || 'quick';
+        const finalTitle = title || (content ? content.trim().substring(0, 50) || 'Untitled' : 'Untitled');
+
+        if (!content) {
+            return res.status(400).json({ error: 'Content is required' });
         }
 
         const newPost = new Post({
             author: req.user.id,
-            title,
+            title: finalTitle,
             content,
             codeSnippet: codeSnippet || { code: '', language: 'javascript' },
-            tags: tags || []
+            tags: tags || [],
+            type: postType
         });
 
         await newPost.save();

@@ -8,8 +8,13 @@ export const useTheme = () => {
 
 export const ThemeProvider = ({ children }) => {
     const [theme, setTheme] = useState(() => {
-        const savedTheme = localStorage.getItem('theme');
-        return savedTheme || 'dark'; // Default to dark
+        return localStorage.getItem('theme') || 'dark';
+    });
+    const [fontSize, setFontSize] = useState(() => {
+        return localStorage.getItem('font-size') || 'medium';
+    });
+    const [codeFont, setCodeFont] = useState(() => {
+        return localStorage.getItem('code-font') || 'JetBrains Mono';
     });
 
     useEffect(() => {
@@ -17,12 +22,22 @@ export const ThemeProvider = ({ children }) => {
         localStorage.setItem('theme', theme);
     }, [theme]);
 
+    useEffect(() => {
+        document.documentElement.setAttribute('data-font-size', fontSize);
+        localStorage.setItem('font-size', fontSize);
+    }, [fontSize]);
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-code-font', codeFont);
+        localStorage.setItem('code-font', codeFont);
+    }, [codeFont]);
+
     const toggleTheme = () => {
         setTheme((prevTheme) => (prevTheme === 'light' ? 'dark' : 'light'));
     };
 
     return (
-        <ThemeContext.Provider value={{ theme, toggleTheme }}>
+        <ThemeContext.Provider value={{ theme, setTheme, toggleTheme, fontSize, setFontSize, codeFont, setCodeFont }}>
             {children}
         </ThemeContext.Provider>
     );

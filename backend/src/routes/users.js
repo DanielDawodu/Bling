@@ -5,6 +5,8 @@ import Post from '../models/Post.js';
 import { isAuthenticated } from '../middleware/auth-middleware.js';
 import { uploadAvatar } from '../middleware/upload-middleware.js';
 import { createNotification } from './notifications.js';
+import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 
 const router = express.Router();
 
@@ -249,16 +251,22 @@ router.post('/:id/cover', isAuthenticated, (req, res) => {
 router.get('/:id/posts', async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const limit = parseInt(req.query.limit) || 10;
+        const limit = parseInt(req.query.limit) || 20;
         const skip = (page - 1) * limit;
 
-        const posts = await Post.find({ author: req.params.id })
+        // Support optional type filter (e.g. ?type=article or ?type=quick)
+        const query = { author: req.params.id };
+        if (req.query.type && ['quick', 'article'].includes(req.query.type)) {
+            query.type = req.query.type;
+        }
+
+        const posts = await Post.find(query)
             .populate('author', 'username avatar isVerified')
             .sort({ createdAt: -1 })
             .skip(skip)
             .limit(limit);
 
-        const total = await Post.countDocuments({ author: req.params.id });
+        const total = await Post.countDocuments(query);
 
         res.json({
             posts,
@@ -352,5 +360,142 @@ router.get('/:id/followers', async (req, res) => {
 });
 
 
+
+// Update user settings
+router.put('/:id/settings', isAuthenticated, async (req, res) => {
+    try {
+        if (req.user.id !== req.params.id) {
+            return res.status(403).json({ error: 'You can only update your own settings' });
+        }
+
+        const { displayName, email, notificationSettings, privacyPreferences, developerMode, developerWebhookUrl } = req.body;
+
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        if (email && email.toLowerCase() !== user.email) {
+            const existingUser = await User.findOne({ email: email.toLowerCase() });
+            if (existingUser) {
+                return res.status(400).json({ error: 'Email already in use' });
+            }
+            user.email = email.toLowerCase();
+        }
+
+        if (displayName !== undefined) user.displayName = displayName;
+        if (developerMode !== undefined) user.developerMode = developerMode;
+        if (developerWebhookUrl !== undefined) user.developerWebhookUrl = developerWebhookUrl;
+        
+        if (notificationSettings) {
+            user.notificationSettings = {
+                ...user.notificationSettings,
+                ...notificationSettings
+            };
+        }
+
+        if (privacyPreferences) {
+            user.privacyPreferences = {
+                ...user.privacyPreferences,
+                ...privacyPreferences
+            };
+        }
+
+        await user.save();
+
+        const updatedUser = await User.findById(req.params.id).select('-password');
+        res.json({ message: 'Settings updated successfully', user: updatedUser });
+    } catch (error) {
+        console.error('Update settings error:', error);
+        res.status(500).json({ error: 'Server error updating settings' });
+    }
+});
+
+// Update user password
+router.put('/:id/password', isAuthenticated, async (req, res) => {
+    try {
+        if (req.user.id !== req.params.id) {
+            return res.status(403).json({ error: 'You can only update your own password' });
+        }
+
+        const { currentPassword, newPassword } = req.body;
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ error: 'Current password and new password are required' });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ error: 'New password must be at least 6 characters' });
+        }
+
+        const user = await User.findById(req.params.id);
+        
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ error: 'Incorrect current password' });
+        }
+
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(newPassword, salt);
+        await user.save();
+
+        res.json({ message: 'Password updated successfully' });
+    } catch (error) {
+        console.error('Update password error:', error);
+        res.status(500).json({ error: 'Server error updating password' });
+    }
+});
+
+// Regenerate Developer API Key
+router.post('/:id/developer/regenerate-key', isAuthenticated, async (req, res) => {
+    try {
+        if (req.user.id !== req.params.id) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+
+        const user = await User.findById(req.params.id);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        const newKey = 'bling_live_' + crypto.randomBytes(24).toString('hex');
+        user.developerApiKey = newKey;
+        await user.save();
+
+        res.json({ apiKey: newKey });
+    } catch (error) {
+        console.error('Regenerate API key error:', error);
+        res.status(500).json({ error: 'Server error generating API key' });
+    }
+});
+
+// Delete user account
+router.delete('/:id', isAuthenticated, async (req, res) => {
+    try {
+        if (req.user.id !== req.params.id) {
+            return res.status(403).json({ error: 'You can only delete your own account' });
+        }
+
+        const userId = req.params.id;
+        const Session = mongoose.model('Session');
+
+        // Delete user's posts
+        await Post.deleteMany({ author: userId });
+        // Delete user's comments
+        await Comment.deleteMany({ author: userId });
+        // Delete user's sessions
+        await Session.deleteMany({ user: userId });
+        // Delete user itself
+        await User.findByIdAndDelete(userId);
+
+        // Logout
+        req.logout((err) => {
+            if (err) console.error('Error logging out during account deletion:', err);
+            res.json({ message: 'Account deleted successfully' });
+        });
+    } catch (error) {
+        console.error('Delete account error:', error);
+        res.status(500).json({ error: 'Server error deleting account' });
+    }
+});
 
 export default router;

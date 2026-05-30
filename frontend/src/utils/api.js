@@ -3,12 +3,14 @@ import axios from 'axios';
 // Create axios instance with default config
 // Use VITE_API_URL for production, fallback to /api for local development
 const getBaseURL = () => {
-    let url = import.meta.env.VITE_API_URL || '/api';
-    // If it's a full URL but missing /api, add it
-    if (url.startsWith('http') && !url.includes('/api')) {
-        url = url.endsWith('/') ? `${url}api` : `${url}/api`;
+    // Use VITE_API_URL if defined, otherwise fallback to relative /api
+    const base = import.meta.env.VITE_API_URL;
+    if (base) {
+        // Ensure no trailing slash before adding /api
+        const trimmed = base.endsWith('/') ? base.slice(0, -1) : base;
+        return `${trimmed}/api`;
     }
-    return url;
+    return '/api';
 };
 
 // Helper for normalizing image/avatar URLs

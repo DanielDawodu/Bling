@@ -1,19 +1,25 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AuthProvider } from './context/auth-context';
 import { ThemeProvider } from './context/ThemeContext';
 import { NotificationProvider } from './context/NotificationContext';
+import { WorkspaceTabsProvider } from './context/WorkspaceContext';
 import ProtectedRoute from './components/ProtectedRoute';
-import Sidebar from './components/Sidebar';
-import RightSidebar from './components/RightSidebar';
-import MobileNav from './components/MobileNav';
-import BlingAI from './components/BlingAI';
+
+// Layout shells
+import DesktopShell from './components/layout/DesktopShell';
+import MobileShell from './components/layout/MobileShell';
+
+// Pages
 import Home from './pages/Home';
+import Settings from './pages/Settings';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import VerifyEmail from './pages/VerifyEmail';
 import Profile from './pages/Profile';
 import CreatePost from './pages/CreatePost';
+import CreateArticle from './pages/CreateArticle';
+import BlingAI from './pages/BlingAI';
 import Search from './pages/Search';
 import Messages from './pages/Messages';
 import Conversation from './pages/Conversation';
@@ -41,6 +47,16 @@ import AdsInfo from './pages/AdsInfo';
 
 function AppContent() {
     const location = useLocation();
+    const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth <= 768);
+        };
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+
     const isAuthPage = ['/login', '/signup', '/verify-email', '/forgot-password', '/reset-password', '/terms', '/privacy', '/cookies', '/accessibility', '/ads-info'].includes(location.pathname);
 
     if (isAuthPage) {
@@ -60,43 +76,36 @@ function AppContent() {
         );
     }
 
+    const Shell = isMobile ? MobileShell : DesktopShell;
+
     return (
-        <div className="app-layout">
-            <header className="sidebar-column">
-                <Sidebar />
-            </header>
-
-            <main className="main-column">
-                <Routes>
-                    <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-                    <Route path="/profile/:id" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
-                    <Route path="/create-post" element={<ProtectedRoute><CreatePost /></ProtectedRoute>} />
-                    <Route path="/jobs" element={<Jobs />} />
-                    <Route path="/jobs/:id" element={<JobDetails />} />
-                    <Route path="/jobs/:id/applications" element={<ProtectedRoute><JobApplications /></ProtectedRoute>} />
-                    <Route path="/create-job" element={<ProtectedRoute><CreateJob /></ProtectedRoute>} />
-                    <Route path="/my-jobs" element={<ProtectedRoute><MyJobs /></ProtectedRoute>} />
-                    <Route path="/snippets" element={<ProtectedRoute><Snippets /></ProtectedRoute>} />
-                    <Route path="/create-snippet" element={<ProtectedRoute><CreateSnippet /></ProtectedRoute>} />
-                    <Route path="/snippets/:id" element={<ProtectedRoute><SnippetDetails /></ProtectedRoute>} />
-                    <Route path="/search" element={<ProtectedRoute><Search /></ProtectedRoute>} />
-                    <Route path="/messages" element={<ProtectedRoute><Messages /></ProtectedRoute>} />
-                    <Route path="/messages/:userId" element={<ProtectedRoute><Conversation /></ProtectedRoute>} />
-                    <Route path="/post/:id" element={<ProtectedRoute><PostDetails /></ProtectedRoute>} />
-                    <Route path="/profile/:id/followers" element={<ProtectedRoute><Followers /></ProtectedRoute>} />
-                    <Route path="/profile/:id/following" element={<ProtectedRoute><Following /></ProtectedRoute>} />
-                    <Route path="/settings/profile" element={<ProtectedRoute><EditProfile /></ProtectedRoute>} />
-                    <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-                    <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-                </Routes>
-            </main>
-
-            <aside className="widgets-column">
-                <RightSidebar />
-            </aside>
-            <MobileNav />
-            <BlingAI />
-        </div >
+        <Routes>
+            <Route element={<ProtectedRoute><Shell /></ProtectedRoute>}>
+                <Route path="/" element={<Home />} />
+                <Route path="/profile/:id" element={<Profile />} />
+                <Route path="/create-post" element={<CreatePost />} />
+                <Route path="/create-article" element={<CreateArticle />} />
+                <Route path="/bling-ai" element={<BlingAI />} />
+                <Route path="/jobs" element={<Jobs />} />
+                <Route path="/jobs/:id" element={<JobDetails />} />
+                <Route path="/jobs/:id/applications" element={<JobApplications />} />
+                <Route path="/create-job" element={<CreateJob />} />
+                <Route path="/my-jobs" element={<MyJobs />} />
+                <Route path="/snippets" element={<Snippets />} />
+                <Route path="/create-snippet" element={<CreateSnippet />} />
+                <Route path="/snippets/:id" element={<SnippetDetails />} />
+                <Route path="/search" element={<Search />} />
+                <Route path="/messages" element={<Messages />} />
+                <Route path="/messages/:userId" element={<Conversation />} />
+                <Route path="/post/:id" element={<PostDetails />} />
+                <Route path="/profile/:id/followers" element={<Followers />} />
+                <Route path="/profile/:id/following" element={<Following />} />
+                <Route path="/settings/profile" element={<EditProfile />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/admin" element={<AdminDashboard />} />
+                <Route path="/notifications" element={<Notifications />} />
+            </Route>
+        </Routes>
     );
 }
 
@@ -105,9 +114,11 @@ function App() {
         <ThemeProvider>
             <AuthProvider>
                 <NotificationProvider>
-                    <Router>
-                        <AppContent />
-                    </Router>
+                    <WorkspaceTabsProvider>
+                        <Router>
+                            <AppContent />
+                        </Router>
+                    </WorkspaceTabsProvider>
                 </NotificationProvider>
             </AuthProvider>
         </ThemeProvider>

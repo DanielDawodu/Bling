@@ -221,3 +221,112 @@
     gap: var(--spacing-md);
     padding: var(--spacing-md);
 }
+
+/* ── Search clear button ───────────────────────────────── */
+.search-clear-btn {
+    position: absolute;
+    right: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--color-text-secondary);
+    font-size: 1.2rem;
+    line-height: 1;
+    padding: 0 4px;
+    display: flex;
+    align-items: center;
+}
+
+/* ── Who to Follow ─────────────────────────────────────── */
+.who-to-follow {
+    padding: var(--spacing-lg);
+}
+
+.wtf-heading {
+    font-size: 1.1rem;
+    font-weight: 800;
+    margin: 0 0 var(--spacing-md);
+    color: var(--color-text-primary);
+}
+
+.wtf-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--color-border);
+    gap: var(--spacing-sm);
+}
+
+.wtf-row:last-child {
+    border-bottom: none;
+}
+
+.wtf-user-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-decoration: none;
+    flex: 1;
+    min-width: 0;
+}
+
+.wtf-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 1.5px solid var(--color-border);
+}
+
+.wtf-avatar-placeholder {
+    background: linear-gradient(135deg, #7c6fef, #5a4fd6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.wtf-user-info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    gap: 1px;
+}
+
+.wtf-name {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wtf-handle {
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+}
+
+.wtf-bio {
+    font-size: 0.78rem;
+    color: var(--color-text-secondary);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.wtf-follow-btn {
+    flex-shrink: 0;
+    border-radius: var(--radius-full) !important;
+    font-weight: 700;
+    padding: 5px 14px !important;
+}
