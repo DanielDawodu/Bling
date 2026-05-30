@@ -38,6 +38,20 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 
+// ===== CORS Middleware (Must be registered first to handle preflights and set CORS headers for error responses) =====
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  process.env.FRONTEND_URL,
+].filter(Boolean);
+
+app.use(
+  cors({
+    origin: true, // Be extremely permissive for debugging
+    credentials: true,
+  })
+);
+
 // ===== MongoDB Connection caching =====
 let cachedDb = null;
 const connectDB = async () => {
@@ -86,19 +100,6 @@ app.use((req, res, next) => {
 
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(mongoSanitize());
-
-const allowedOrigins = [
-  'http://localhost:5173',
-  'http://localhost:3000',
-  process.env.FRONTEND_URL,
-].filter(Boolean);
-
-app.use(
-  cors({
-    origin: true, // Be extremely permissive for debugging
-    credentials: true,
-  })
-);
 
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
