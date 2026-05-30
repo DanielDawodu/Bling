@@ -175,8 +175,12 @@ export default function MobileShell() {
   ))?.id;
 
   /* ── Drawer nav ──────────────────────────────── */
-  const goTo = (path) => navigate(path);
+  const goTo = (path) => {
+    setDrawerOpen(false);
+    navigate(path);
+  };
   const handleLogout = async () => {
+    setDrawerOpen(false);
     try { await logout(); } catch {}
     navigate('/login');
   };
@@ -319,7 +323,7 @@ export default function MobileShell() {
           display: 'flex', flexDirection: 'column',
           overflowY: 'auto',
           transform: drawerOpen ? 'translateX(0)' : 'translateX(-100%)',
-          transition: 'transform 0.2s ease',
+          transition: drawerOpen ? 'transform 0.2s ease' : 'transform 0.15s ease',
           willChange: 'transform',
         }}
       >

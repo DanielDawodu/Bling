@@ -10,6 +10,23 @@ export default function Settings() {
   const { theme, setTheme, toggleTheme, fontSize, setFontSize, codeFont, setCodeFont } = useTheme();
 
   const [activeSection, setActiveSection] = useState('account');
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+  const [mobileDetailView, setMobileDetailView] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const handleSectionClick = (section) => {
+    setActiveSection(section);
+    if (window.innerWidth <= 768) {
+      setMobileDetailView(true);
+    }
+  };
 
   // Account State
   const [displayName, setDisplayName] = useState(user?.displayName || '');
@@ -707,26 +724,26 @@ export default function Settings() {
   };
 
   return (
-    <div className="settings-page fade-in">
+    <div className={`settings-page ${isMobile ? (mobileDetailView ? 'view-detail' : 'view-list') : ''} fade-in`}>
       <aside className="settings-sidebar">
         <ul>
-          <li className={activeSection === 'account' ? 'active' : ''} onClick={() => setActiveSection('account')}>
+          <li className={activeSection === 'account' ? 'active' : ''} onClick={() => handleSectionClick('account')}>
             Account
           </li>
-          <li className={activeSection === 'security' ? 'active' : ''} onClick={() => setActiveSection('security')}>
+          <li className={activeSection === 'security' ? 'active' : ''} onClick={() => handleSectionClick('security')}>
             Security
           </li>
-          <li className={activeSection === 'appearance' ? 'active' : ''} onClick={() => setActiveSection('appearance')}>
+          <li className={activeSection === 'appearance' ? 'active' : ''} onClick={() => handleSectionClick('appearance')}>
             Appearance
           </li>
-          <li className={activeSection === 'notifications' ? 'active' : ''} onClick={() => setActiveSection('notifications')}>
+          <li className={activeSection === 'notifications' ? 'active' : ''} onClick={() => handleSectionClick('notifications')}>
             Notifications
           </li>
-          <li className={activeSection === 'privacy' ? 'active' : ''} onClick={() => setActiveSection('privacy')}>
+          <li className={activeSection === 'privacy' ? 'active' : ''} onClick={() => handleSectionClick('privacy')}>
             Privacy
           </li>
           {devMode && (
-            <li className={activeSection === 'developer' ? 'active' : ''} onClick={() => setActiveSection('developer')}>
+            <li className={activeSection === 'developer' ? 'active' : ''} onClick={() => handleSectionClick('developer')}>
               Developer
             </li>
           )}
@@ -734,6 +751,33 @@ export default function Settings() {
       </aside>
 
       <section className="settings-content">
+        {isMobile && (
+          <button 
+            className="settings-back-btn"
+            onClick={() => setMobileDetailView(false)}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '6px',
+              background: 'none',
+              border: 'none',
+              color: 'var(--color-accent)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: 'var(--text-xs)',
+              cursor: 'pointer',
+              padding: '0 0 16px 0',
+              fontWeight: 600,
+              outline: 'none',
+              WebkitTapHighlightColor: 'transparent',
+            }}
+          >
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="19" y1="12" x2="5" y2="12"></line>
+              <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            BACK TO SETTINGS
+          </button>
+        )}
         {renderSection()}
       </section>
 
