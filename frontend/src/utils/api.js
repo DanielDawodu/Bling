@@ -59,6 +59,13 @@ api.interceptors.response.use(
             // Server responded with error status
             const message = error.response.data?.error || 'An error occurred';
             console.error('API Error:', message);
+            
+            // Handle session expiration globally
+            if (error.response.status === 401 && 
+                !error.config.url.includes('/auth/login') && 
+                !error.config.url.includes('/auth/me')) {
+                window.dispatchEvent(new Event('auth:unauthorized'));
+            }
         } else if (error.request) {
             // Request made but no response
             console.error('Network Error: No response from server');
