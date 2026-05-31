@@ -204,7 +204,7 @@ Core facts:
 Be witty, sharp, and act like the most helpful senior dev on the team.`;
 
         // Convert history to Gemini format
-        const geminiHistory = [];
+        let geminiHistory = [];
         if (history && Array.isArray(history)) {
             history.forEach(msg => {
                 let role = 'user';
@@ -224,6 +224,12 @@ Be witty, sharp, and act like the most helpful senior dev on the team.`;
                 }
             });
         }
+        
+        // Gemini requires the first message in history to be from the 'user'
+        while (geminiHistory.length > 0 && geminiHistory[0].role === 'model') {
+            geminiHistory.shift();
+        }
+
 
         const responseText = await callWithRetry(async (modelName) => {
             const client = getGenAI();
