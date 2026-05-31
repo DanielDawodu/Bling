@@ -1,9 +1,11 @@
 import axios from 'axios';
 
 // Create axios instance with default config
-// Use VITE_API_URL for production, fallback to /api for local development
+// Use relative routes in production to leverage Vercel proxy, fallback to VITE_API_URL in development
 const getBaseURL = () => {
-    // Use VITE_API_URL if defined, otherwise fallback to relative /api
+    if (import.meta.env.PROD) {
+        return '/api';
+    }
     const base = import.meta.env.VITE_API_URL;
     if (base) {
         // Ensure no trailing slash before adding /api
@@ -18,7 +20,7 @@ export const normalizeUrl = (path) => {
     if (!path) return null;
     if (path.startsWith('http')) return path;
 
-    const backendUrl = import.meta.env.VITE_API_URL || '';
+    const backendUrl = import.meta.env.PROD ? '' : (import.meta.env.VITE_API_URL || '');
     const cleanBackendUrl = backendUrl.replace(/\/api\/?$/, '');
 
     // Ensure /uploads prefix
