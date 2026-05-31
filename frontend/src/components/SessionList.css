@@ -1,10 +1,13 @@
 .session-list {
   margin-top: 1rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .session-table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 600px; /* Forces scrolling on very narrow screens */
 }
 
 .session-table th,
