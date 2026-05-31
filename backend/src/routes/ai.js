@@ -42,7 +42,8 @@ router.post('/audit-verification', isAuthenticated, async (req, res) => {
         res.json(result);
     } catch (error) {
         console.error('AI Verification Audit Error:', error);
-        res.status(500).json({ error: error.message });
+        const isRateLimit = error.message?.includes('rate limit') || error.message?.includes('temporarily unavailable');
+        res.status(isRateLimit ? 503 : 500).json({ error: error.message, retryable: isRateLimit });
     }
 });
 
@@ -66,7 +67,8 @@ router.post('/audit-content', isAuthenticated, async (req, res) => {
         res.json(result);
     } catch (error) {
         console.error('Content Audit Error:', error);
-        res.status(500).json({ error: error.message });
+        const isRateLimit = error.message?.includes('rate limit') || error.message?.includes('temporarily unavailable');
+        res.status(isRateLimit ? 503 : 500).json({ error: error.message, retryable: isRateLimit });
     }
 });
 
@@ -84,7 +86,8 @@ router.post('/chat', isAuthenticated, async (req, res) => {
         res.json({ reply });
     } catch (error) {
         console.error('Bling AI Chat Error:', error);
-        res.status(500).json({ error: error.message });
+        const isRateLimit = error.message?.includes('rate limit') || error.message?.includes('temporarily unavailable');
+        res.status(isRateLimit ? 503 : 500).json({ error: error.message, retryable: isRateLimit });
     }
 });
 
