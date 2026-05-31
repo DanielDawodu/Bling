@@ -136,6 +136,8 @@ export default function MobileShell() {
 
   /* ── DM unread count ─────────────────────────── */
   useEffect(() => {
+    if (!user) return; // Don't poll if user is not authenticated
+
     let timer;
     const poll = async () => {
       try {
@@ -144,9 +146,9 @@ export default function MobileShell() {
       } catch { /* silent */ }
     };
     poll();
-    timer = setInterval(poll, 15000);
+    timer = setInterval(poll, 30000);
     return () => clearInterval(timer);
-  }, []);
+  }, [user]);
 
   /* ── Close drawer on route change ───────────── */
   useEffect(() => {

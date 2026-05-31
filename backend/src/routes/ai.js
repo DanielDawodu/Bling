@@ -2,7 +2,7 @@ import express from 'express';
 import { isAuthenticated } from '../middleware/auth-middleware.js';
 import User from '../models/User.js';
 import Post from '../models/Post.js';
-import { auditUserVerification, chatWithBlingAI, auditContent } from '../services/openai.js';
+import { auditUserVerification, chatWithBlingAI, auditContent } from '../services/gemini.js';
 
 const router = express.Router();
 console.log("--- AI ROUTES LOADED ---");

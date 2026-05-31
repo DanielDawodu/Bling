@@ -50,16 +50,20 @@ function TrendingGraph() {
 }
 
 // ── Notifications panel ───────────────────────────────────────────────────────
-function NotificationsPanel() {
+function NotificationsPanel({ user }) {
   const [notifs, setNotifs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     notificationAPI.getNotifications({ limit: 8 })
       .then(r => setNotifs(r.data.notifications || []))
       .catch(() => setNotifs([]))
       .finally(() => setLoading(false));
-  }, []);
+  }, [user]);
 
   const typeIcon = { like: '♥', comment: '◎', follow: '◉', mention: '@', default: '◆' };
 
@@ -318,7 +322,7 @@ export default function RightDock() {
       {/* Scrollable upper area */}
       <div style={{ flex: 1, overflowY: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 16 }}>
         {user && <TrendingGraph />}
-        <NotificationsPanel />
+        <NotificationsPanel user={user} />
       </div>
 
       {/* AI Terminal pinned to bottom */}

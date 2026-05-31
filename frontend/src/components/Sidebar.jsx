@@ -2,7 +2,6 @@ import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/auth-context';
 import { useTheme } from '../context/ThemeContext';
-import { useNotifications } from '../context/NotificationContext';
 import VerificationBadge from './VerificationBadge';
 import { normalizeUrl } from '../utils/api';
 import './Sidebar.css';
@@ -10,8 +9,8 @@ import './Sidebar.css';
 function Sidebar() {
     const { user, logout } = useAuth();
     const { theme, toggleTheme } = useTheme();
-    const { unreadCount, requestPermission } = useNotifications();
     const navigate = useNavigate();
+
 
     const handleLogout = () => {
         logout();
@@ -66,13 +65,6 @@ function Sidebar() {
                     <span className="sidebar-text">Messages</span>
                 </NavLink>
 
-                <NavLink to="/notifications" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
-                    <div className="icon-wrapper">
-                        <svg viewBox="0 0 24 24" className="sidebar-icon"><g><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm4.59-12.42L10 14.17l-2.59-2.58L6 13l4 4 8-8z"></path></g></svg>
-                        {unreadCount > 0 && <span className="notification-badge">{unreadCount}</span>}
-                    </div>
-                    <span className="sidebar-text">Notifications</span>
-                </NavLink>
 
                 <NavLink to="/jobs" className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
                     <div className="icon-wrapper">

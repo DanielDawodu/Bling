@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
+import { notificationAPI } from '../utils/api';
 import { useAuth } from './auth-context';
 
 const NotificationContext = createContext();
@@ -9,48 +9,48 @@ export function useNotifications() {
 }
 
 export function NotificationProvider({ children }) {
-    const { user, isAuthenticated } = useAuth();
+    const { user, isAuthenticated, loading: authLoading } = useAuth();
     const [notifications, setNotifications] = useState([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
 
     // Fetch notifications from API
     const fetchNotifications = useCallback(async () => {
-        if (!isAuthenticated) return;
+        if (!isAuthenticated || authLoading) return;
 
         try {
             setLoading(true);
-            const response = await axios.get('/api/notifications', {
-                withCredentials: true
-            });
+            const response = await notificationAPI.getNotifications({ limit: 15 });
             setNotifications(response.data.notifications || []);
         } catch (error) {
-            console.error('Error fetching notifications:', error);
+            // Silently ignore 401 errors — user may not be logged in yet
+            if (error?.response?.status !== 401) {
+                console.error('Error fetching notifications:', error);
+            }
         } finally {
             setLoading(false);
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, authLoading]);
 
     // Fetch unread count
     const fetchUnreadCount = useCallback(async () => {
-        if (!isAuthenticated) return;
+        if (!isAuthenticated || authLoading) return;
 
         try {
-            const response = await axios.get('/api/notifications/unread-count', {
-                withCredentials: true
-            });
+            const response = await notificationAPI.getUnreadCount();
             setUnreadCount(response.data.count || 0);
         } catch (error) {
-            console.error('Error fetching unread count:', error);
+            // Silently ignore 401 errors — user may not be logged in yet
+            if (error?.response?.status !== 401) {
+                console.error('Error fetching unread count:', error);
+            }
         }
-    }, [isAuthenticated]);
+    }, [isAuthenticated, authLoading]);
 
     // Mark single notification as read
     const markAsRead = async (notificationId) => {
         try {
-            await axios.patch(`/api/notifications/${notificationId}/read`, {}, {
-                withCredentials: true
-            });
+            await notificationAPI.markAsRead(notificationId);
 
             setNotifications(prev =>
                 prev.map(n => n._id === notificationId ? { ...n, read: true } : n)
@@ -64,9 +64,7 @@ export function NotificationProvider({ children }) {
     // Mark all notifications as read
     const markAllAsRead = async () => {
         try {
-            await axios.patch('/api/notifications/read-all', {}, {
-                withCredentials: true
-            });
+            await notificationAPI.markAllAsRead();
 
             setNotifications(prev => prev.map(n => ({ ...n, read: true })));
             setUnreadCount(0);
@@ -78,9 +76,7 @@ export function NotificationProvider({ children }) {
     // Delete a notification
     const deleteNotification = async (notificationId) => {
         try {
-            await axios.delete(`/api/notifications/${notificationId}`, {
-                withCredentials: true
-            });
+            await notificationAPI.deleteNotification(notificationId);
 
             const notification = notifications.find(n => n._id === notificationId);
             setNotifications(prev => prev.filter(n => n._id !== notificationId));
@@ -101,7 +97,7 @@ export function NotificationProvider({ children }) {
 
         try {
             // Get VAPID public key
-            const vapidResponse = await axios.get('/api/notifications/vapid-public-key');
+            const vapidResponse = await notificationAPI.getVapidPublicKey();
             const vapidPublicKey = vapidResponse.data.publicKey;
 
             if (!vapidPublicKey) {
@@ -119,11 +115,7 @@ export function NotificationProvider({ children }) {
             });
 
             // Send subscription to server
-            await axios.post('/api/notifications/subscribe', {
-                subscription: subscription.toJSON()
-            }, {
-                withCredentials: true
-            });
+            await notificationAPI.subscribe(subscription.toJSON());
 
             console.log('Push subscription successful');
             return true;
@@ -169,25 +161,27 @@ export function NotificationProvider({ children }) {
         return outputArray;
     }
 
-    // Initial fetch and polling
+    // Initial fetch and polling — only starts once auth loading is complete and user is authenticated
     useEffect(() => {
-        if (isAuthenticated) {
-            fetchNotifications();
-            fetchUnreadCount();
+        if (authLoading) return; // Wait until auth check is done
 
-            // Poll for new notifications every 5 seconds
-            const interval = setInterval(() => {
-                fetchUnreadCount();
-                // Also fetch notifications slightly less frequently or just use the same interval if needed
-                // For simplicity and responsiveness, let's keep unread count check fast
-            }, 5000);
-
-            return () => clearInterval(interval);
-        } else {
+        if (!isAuthenticated) {
             setNotifications([]);
             setUnreadCount(0);
+            return;
         }
-    }, [isAuthenticated, fetchNotifications, fetchUnreadCount]);
+
+        // Initial fetch once confirmed authenticated
+        fetchNotifications();
+        fetchUnreadCount();
+
+        // Poll every 30 seconds (reduced from 5s to avoid excessive API calls)
+        const interval = setInterval(() => {
+            fetchUnreadCount();
+        }, 30000);
+
+        return () => clearInterval(interval);
+    }, [isAuthenticated, authLoading, fetchNotifications, fetchUnreadCount]);
 
     const value = {
         notifications,
